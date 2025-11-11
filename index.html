@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBZ Studio - Change is</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+</head>
+    <!-- 版权信息 -->
+    <footer class="copyright-footer">
+        <p>©2025 CBZ Studio 版权所有</p>
+    </footer>
+
+    <style>
+        .copyright-footer {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+            text-align: center;
+            z-index: 1000;
+            pointer-events: none;
+        }
+    </style>
+</body>
+</html>
+
+<body>
+    <!-- 增强背景动画 -->
+    <div class="bg-animation">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    
+    <!-- 几何图形背景 -->
+    <div class="geometric-bg">
+        <div class="geo-shape"></div>
+        <div class="geo-shape"></div>
+        <div class="geo-shape"></div>
+        <div class="geo-shape"></div>
+    </div>
+
+    <!-- 页面过渡层 -->
+    <div class="page-transition" id="pageTransition"></div>
+
+    <!-- 加载指示器 -->
+    <div class="loading-indicator" id="loadingIndicator">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- Logo区域 -->
+        <div class="logo-container">
+            <div class="main-logo" id="mainLogo" title="点击触发彩蛋" role="img" aria-label="CBZ Studio Logo" tabindex="0">
+        </div>
+    </div>
+        
+        <h1 class="main-title">CBZ Studio</h1>
+        <p class="subtitle">
+            创新科技，引领未来<br>
+            我们致力于打造卓越的数字体验，让技术改变生活
+        </p>
+        <!-- 站点搜索（可触发彩蛋） -->
+        <form id="siteSearchForm" class="site-search" role="search" aria-label="站点搜索">
+            <input id="siteSearch" type="search" class="search-input" placeholder="搜索或输入彩蛋代码" aria-label="搜索或输入彩蛋代码">
+            <button type="submit" class="search-button">搜索</button>
+        </form>
+        
+        <!-- 功能卡片 -->
+        <div class="features-container">
+            <!-- 游戏中心卡片 -->
+            <div class="feature-card" data-target="game">
+                <div class="feature-icon">🎮</div>
+                <h2 class="feature-title">游戏中心</h2>
+                <p class="feature-description">
+                    精心打造的HTML5游戏平台，提供多种经典游戏，让用户在休闲娱乐中享受科技带来的乐趣。
+                </p>
+                <button class="feature-button" onclick="navigateToGame()">进入游戏</button>
+            </div>
+            
+            <!-- 本地云盘卡片 -->
+            <div class="feature-card" data-target="cloud">
+                <div class="feature-icon">☁️</div>
+                <h2 class="feature-title">本地云盘</h2>
+                <p class="feature-description">
+                    安全可靠的文件存储解决方案，支持多格式文件管理，让数据存储变得简单便捷。
+                </p>
+                <button class="feature-button" onclick="navigateToCloud()">进入云盘</button>
+            </div>
+
+            <!-- 学习中心卡片 -->
+            <div class="feature-card" data-target="learn">
+                <div class="feature-icon">📚</div>
+                <h2 class="feature-title">学习中心</h2>
+                <p class="feature-description">
+                    专业的在线教育平台，提供数学学习服务，通过游戏化学习方式让知识获取更加有趣高效。
+                </p>
+                <button class="feature-button" onclick="navigateToLearn()">开始学习</button>
+            </div>
+
+            <!-- AI工具箱卡片 -->
+            <div class="feature-card" data-target="ai">
+                <div class="feature-icon">🤖</div>
+                <h2 class="feature-title">AI工具箱</h2>
+                <p class="feature-description">
+                    集成OpenAI API的智能工具平台，提供代码生成、智能对话等功能，助力开发者提升效率。
+                </p>
+                <button class="feature-button" onclick="navigateToAI()">立即体验</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="footer-content">
+            <p>©2025 CBZ Studio 版权所有</p>
+            <div class="social-links">
+                <a href="mailto:gitcbz@outlook.com" class="social-link" title="邮箱">📧</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 错误提示 -->
+    <div class="error-tooltip" id="errorTooltip"></div>
+
+    <script src="js/common.js"></script>
+    <script src="js/index.js"></script>
+    
+    <!-- logo 的键盘触发已移除；彩蛋通过搜索框输入触发 -->
+
+    <script>
+        // Logo图片加载处理
+        document.addEventListener('DOMContentLoaded', function() {
+            const logo = document.getElementById('mainLogo');
+            const img = new Image();
+            
+            img.onload = function() {
+                logo.style.backgroundImage = 'url(files/logo.PNG)';
+                logo.textContent = '';
+                logo.classList.remove('error');
+            };
+            
+            img.onerror = function() {
+                console.warn('Logo图片加载失败，使用文字Logo');
+                logo.classList.add('error');
+                // 可以在这里添加错误处理逻辑
+            };
+            
+            img.src = 'files/logo.PNG';
+            
+            // 设置超时处理
+            setTimeout(() => {
+                if (!img.complete) {
+                    console.warn('Logo图片加载超时');
+                    logo.classList.add('error');
+                }
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

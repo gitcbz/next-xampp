@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>方块世界 - Block World</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(to bottom, #87CEEB 0%, #98D8C8 100%);
+            overflow: hidden;
+        }
+
+        #gameCanvas {
+            display: block;
+            cursor: crosshair;
+        }
+
+        /* UI界面 */
+        .game-ui {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* 顶部信息栏 */
+        .top-bar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            gap: 30px;
+            font-size: 16px;
+            pointer-events: auto;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-icon {
+            font-size: 20px;
+        }
+
+        /* 库存栏 */
+        .inventory {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 5px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            pointer-events: auto;
+        }
+
+        .inventory-slot {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            font-size: 30px;
+        }
+
+        .inventory-slot:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .inventory-slot.active {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .slot-number {
+            position: absolute;
+            top: 2px;
+            left: 5px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* 控制提示 */
+        .controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            font-size: 14px;
+            line-height: 1.8;
+            max-width: 250px;
+            pointer-events: auto;
+        }
+
+        .controls h3 {
+            margin-bottom: 10px;
+            color: #ffd700;
+            font-size: 18px;
+        }
+
+        .control-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+
+        .control-key {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        /* 开始菜单 */
+        .start-menu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        .menu-content {
+            text-align: center;
+            color: white;
+        }
+
+        .game-title {
+            font-size: 64px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 210, 255, 0.5);
+        }
+
+        .game-subtitle {
+            font-size: 20px;
+            color: #aaa;
+            margin-bottom: 40px;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+            pointer-events: auto;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.5);
+        }
+
+        /* 十字准星 */
+        .crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+        }
+
+        .crosshair::before,
+        .crosshair::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .crosshair::before {
+            width: 2px;
+            height: 20px;
+            left: 9px;
+            top: 0;
+        }
+
+        .crosshair::after {
+            width: 20px;
+            height: 2px;
+            left: 0;
+            top: 9px;
+        }
+
+        /* 消息提示 */
+        .message {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .message.show {
+            opacity: 1;
+        }
+
+        /* 返回按钮 */
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 16px;
+            pointer-events: auto;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* 时间显示 */
+        .time-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            font-size: 16px;
+            pointer-events: auto;
+        }
+
+        .sun-icon, .moon-icon {
+            margin-right: 8px;
+            font-size: 20px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .controls {
+                display: none;
+            }
+            
+            .inventory {
+                bottom: 20px;
+            }
+            
+            .inventory-slot {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+            
+            .game-title {
+                font-size: 48px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div class="game-ui">
+            <!-- 顶部信息栏 -->
+            <div class="top-bar">
+                <div class="info-item">
+                    <span class="info-icon">📍</span>
+                    <span>位置: <span id="position">0, 0, 0</span></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-icon">🎯</span>
+                    <span>方块: <span id="blockCount">0</span></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-icon">⚡</span>
+                    <span>FPS: <span id="fps">60</span></span>
+                </div>
+            </div>
+
+            <!-- 时间显示 -->
+            <div class="time-display">
+                <span id="timeIcon" class="sun-icon">☀️</span>
+                <span id="timeText">白天</span>
+            </div>
+
+            <!-- 控制提示 -->
+            <div class="controls">
+                <h3>操作说明</h3>
+                <div class="control-item">
+                    <span>移动</span>
+                    <span class="control-key">WASD</span>
+                </div>
+                <div class="control-item">
+                    <span>跳跃</span>
+                    <span class="control-key">空格</span>
+                </div>
+                <div class="control-item">
+                    <span>视角</span>
+                    <span class="control-key">鼠标</span>
+                </div>
+                <div class="control-item">
+                    <span>放置方块</span>
+                    <span class="control-key">左键</span>
+                </div>
+                <div class="control-item">
+                    <span>破坏方块</span>
+                    <span class="control-key">右键</span>
+                </div>
+                <div class="control-item">
+                    <span>飞行</span>
+                    <span class="control-key">F</span>
+                </div>
+                <div class="control-item">
+                    <span>切换方块</span>
+                    <span class="control-key">1-9</span>
+                </div>
+            </div>
+
+            <!-- 库存栏 -->
+            <div class="inventory">
+                <div class="inventory-slot active" data-block="grass">
+                    <span class="slot-number">1</span>
+                    🌱
+                </div>
+                <div class="inventory-slot" data-block="dirt">
+                    <span class="slot-number">2</span>
+                    🟫
+                </div>
+                <div class="inventory-slot" data-block="stone">
+                    <span class="slot-number">3</span>
+                    🪨
+                </div>
+                <div class="inventory-slot" data-block="wood">
+                    <span class="slot-number">4</span>
+                    🪵
+                </div>
+                <div class="inventory-slot" data-block="leaves">
+                    <span class="slot-number">5</span>
+                    🍃
+                </div>
+                <div class="inventory-slot" data-block="water">
+                    <span class="slot-number">6</span>
+                    💧
+                </div>
+                <div class="inventory-slot" data-block="sand">
+                    <span class="slot-number">7</span>
+                    🏖️
+                </div>
+                <div class="inventory-slot" data-block="brick">
+                    <span class="slot-number">8</span>
+                    🧱
+                </div>
+                <div class="inventory-slot" data-block="glass">
+                    <span class="slot-number">9</span>
+                    🪟
+                </div>
+            </div>
+
+            <!-- 十字准星 -->
+            <div class="crosshair"></div>
+
+            <!-- 消息提示 -->
+            <div class="message" id="message"></div>
+        </div>
+
+        <!-- 开始菜单 -->
+        <div class="start-menu" id="startMenu">
+            <div class="menu-content">
+                <h1 class="game-title">🌍 方块世界</h1>
+                <p class="game-subtitle">创造属于你的世界</p>
+                <button class="btn" onclick="startGame()">开始游戏</button>
+                <div style="margin-top: 30px; color: #aaa;">
+                    <p>提示：按 ESC 暂停游戏</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 返回按钮 -->
+        <a href="../index.html" class="back-btn">← 返回游戏中心</a>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置画布大小
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // 游戏状态
+        const game = {
+            world: {},
+            blockSize: 20,
+            worldSize: 50,
+            camera: { x: 0, y: 0, z: 0 },
+            player: {
+                x: 25,
+                y: 10,
+                z: 25,
+                vx: 0,
+                vy: 0,
+                vz: 0,
+                speed: 0.2,
+                jumpPower: 0.3,
+                onGround: false,
+                flying: false
+            },
+            selectedBlock: 'grass',
+            mouse: { x: 0, y: 0 },
+            keys: {},
+            isPaused: false,
+            isStarted: false,
+            time: 0,
+            dayDuration: 600, // 10秒一天
+            blockCount: 0,
+            fps: 60,
+            lastFrameTime: performance.now()
+        };
+
+        // 方块类型
+        const blockTypes = {
+            grass: { color: '#7CFC00', icon: '🌱', solid: true },
+            dirt: { color: '#8B4513', icon: '🟫', solid: true },
+            stone: { color: '#808080', icon: '🪨', solid: true },
+            wood: { color: '#8B4513', icon: '🪵', solid: true },
+            leaves: { color: '#228B22', icon: '🍃', solid: false },
+            water: { color: '#4682B4', icon: '💧', solid: false },
+            sand: { color: '#F4A460', icon: '🏖️', solid: true },
+            brick: { color: '#B22222', icon: '🧱', solid: true },
+            glass: { color: '#87CEEB', icon: '🪟', solid: true }
+        };
+
+        // 初始化世界
+        function initWorld() {
+            // 生成地形
+            for (let x = 0; x < game.worldSize; x++) {
+                for (let z = 0; z < game.worldSize; z++) {
+                    const height = Math.floor(Math.sin(x * 0.1) * 3 + Math.cos(z * 0.1) * 3 + 5);
+                    
+                    for (let y = 0; y <= height; y++) {
+                        let blockType = 'stone';
+                        if (y === height) {
+                            blockType = 'grass';
+                        } else if (y > height - 3) {
+                            blockType = 'dirt';
+                        }
+                        
+                        setBlock(x, y, z, blockType);
+                    }
+                    
+                    // 添加一些树
+                    if (Math.random() < 0.02 && height > 3) {
+                        generateTree(x, height + 1, z);
+                    }
+                }
+            }
+        }
+
+        // 生成树
+        function generateTree(x, y, z) {
+            // 树干
+            for (let i = 0; i < 4; i++) {
+                setBlock(x, y + i, z, 'wood');
+            }
+            
+            // 树叶
+            for (let dx = -2; dx <= 2; dx++) {
+                for (let dy = 2; dy <= 4; dy++) {
+                    for (let dz = -2; dz <= 2; dz++) {
+                        if (Math.abs(dx) + Math.abs(dz) <= 3) {
+                            setBlock(x + dx, y + dy, z + dz, 'leaves');
+                        }
+                    }
+                }
+            }
+        }
+
+        // 设置方块
+        function setBlock(x, y, z, type) {
+            const key = `${x},${y},${z}`;
+            if (type) {
+                game.world[key] = type;
+                game.blockCount++;
+            } else {
+                delete game.world[key];
+                game.blockCount--;
+            }
+        }
+
+        // 获取方块
+        function getBlock(x, y, z) {
+            const key = `${x},${y},${z}`;
+            return game.world[key];
+        }
+
+        // 3D到2D投影
+        function project3D(x, y, z) {
+            const scale = game.blockSize;
+            const isoX = (x - z) * scale * 0.866;
+            const isoY = (x + z) * scale * 0.5 - y * scale;
+            
+            return {
+                x: isoX + canvas.width / 2 - game.camera.x,
+                y: isoY + canvas.height / 2 - game.camera.y
+            };
+        }
+
+        // 绘制方块
+        function drawBlock(x, y, z, type) {
+            const block = blockTypes[type];
+            if (!block) return;
+            
+            const pos = project3D(x, y, z);
+            const size = game.blockSize;
+            
+            // 计算方块的各个面
+            const top = [
+                { x: pos.x, y: pos.y },
+                { x: pos.x + size * 0.866, y: pos.y + size * 0.5 },
+                { x: pos.x, y: pos.y + size },
+                { x: pos.x - size * 0.866, y: pos.y + size * 0.5 }
+            ];
+            
+            const left = [
+                { x: top[3].x, y: top[3].y },
+                { x: top[2].x, y: top[2].y },
+                { x: top[2].x, y: top[2].y + size },
+                { x: top[3].x, y: top[3].y + size }
+            ];
+            
+            const right = [
+                { x: top[2].x, y: top[2].y },
+                { x: top[1].x, y: top[1].y },
+                { x: top[1].x, y: top[1].y + size },
+                { x: top[2].x, y: top[2].y + size }
+            ];
+            
+            // 绘制阴影
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+            ctx.beginPath();
+            ctx.moveTo(left[0].x, left[0].y + size);
+            ctx.lineTo(left[1].x, left[1].y + size);
+            ctx.lineTo(right[1].x, right[1].y + size);
+            ctx.lineTo(right[0].x, right[0].y + size);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 绘制各个面
+            // 左面
+            ctx.fillStyle = shadeColor(block.color, -20);
+            ctx.beginPath();
+            ctx.moveTo(left[0].x, left[0].y);
+            ctx.lineTo(left[1].x, left[1].y);
+            ctx.lineTo(left[2].x, left[2].y);
+            ctx.lineTo(left[3].x, left[3].y);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            // 右面
+            ctx.fillStyle = shadeColor(block.color, 20);
+            ctx.beginPath();
+            ctx.moveTo(right[0].x, right[0].y);
+            ctx.lineTo(right[1].x, right[1].y);
+            ctx.lineTo(right[2].x, right[2].y);
+            ctx.lineTo(right[3].x, right[3].y);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            // 顶面
+            ctx.fillStyle = block.color;
+            ctx.beginPath();
+            ctx.moveTo(top[0].x, top[0].y);
+            ctx.lineTo(top[1].x, top[1].y);
+            ctx.lineTo(top[2].x, top[2].y);
+            ctx.lineTo(top[3].x, top[3].y);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        // 颜色明暗调整
+        function shadeColor(color, percent) {
+            const num = parseInt(color.replace("#", ""), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+                (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+                (B < 255 ? B < 1 ? 0 : B : 255))
+                .toString(16).slice(1);
+        }
+
+        // 获取目标方块
+        function getTargetBlock() {
+            const maxDistance = 5;
+            let closestBlock = null;
+            let closestDistance = maxDistance;
+            
+            for (let key in game.world) {
+                const [x, y, z] = key.split(',').map(Number);
+                const distance = Math.sqrt(
+                    Math.pow(x - game.player.x, 2) +
+                    Math.pow(y - game.player.y, 2) +
+                    Math.pow(z - game.player.z, 2)
+                );
+                
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestBlock = { x, y, z, type: game.world[key] };
+                }
+            }
+            
+            return closestBlock;
+        }
+
+        // 更新玩家
+        function updatePlayer() {
+            if (game.isPaused) return;
+            
+            const player = game.player;
+            
+            // 移动
+            // 使用 KeyboardEvent.code (KeyW/KeyA/KeyS/KeyD) 来保证大小写和布局一致性
+            if (game.keys['KeyW']) {
+                player.vz -= player.speed;
+            }
+            if (game.keys['KeyS']) {
+                player.vz += player.speed;
+            }
+            if (game.keys['KeyA']) {
+                player.vx -= player.speed;
+            }
+            if (game.keys['KeyD']) {
+                player.vx += player.speed;
+            }
+            
+            // 跳跃
+            // 使用 code 名称：Space / ArrowUp
+            if ((game.keys['Space'] || game.keys['ArrowUp']) && (player.onGround || player.flying)) {
+                player.vy = -player.jumpPower;
+            }
+            
+            // 飞行模式的切换改为在 keyup 时触发（避免按住重复触发）
+            // 相关逻辑在键盘事件部分实现
+            
+            // 应用重力
+            if (!player.flying) {
+                player.vy += 0.02;
+            }
+            
+            // 应用速度
+            player.x += player.vx;
+            player.y += player.vy;
+            player.z += player.vz;
+            
+            // 摩擦力
+            player.vx *= 0.8;
+            player.vy *= 0.9;
+            player.vz *= 0.8;
+            
+            // 碰撞检测
+            const blockX = Math.floor(player.x);
+            const blockY = Math.floor(player.y);
+            const blockZ = Math.floor(player.z);
+            
+            player.onGround = false;
+            
+            // 地面检测
+            if (getBlock(blockX, blockY + 1, blockZ)) {
+                player.y = blockY;
+                player.vy = 0;
+                player.onGround = true;
+            }
+            
+            // 边界限制
+            player.x = Math.max(0, Math.min(game.worldSize - 1, player.x));
+            player.y = Math.max(0, Math.min(20, player.y));
+            player.z = Math.max(0, Math.min(game.worldSize - 1, player.z));
+            
+            // 更新相机
+            game.camera.x = (player.x - player.z) * game.blockSize * 0.866;
+            game.camera.y = (player.x + player.z) * game.blockSize * 0.5 - player.y * game.blockSize;
+        }
+
+        // 渲染世界
+        function render() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制天空渐变
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            const isDay = (game.time % game.dayDuration) < (game.dayDuration / 2);
+            
+            if (isDay) {
+                gradient.addColorStop(0, '#87CEEB');
+                gradient.addColorStop(1, '#98D8C8');
+            } else {
+                gradient.addColorStop(0, '#191970');
+                gradient.addColorStop(1, '#000033');
+            }
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制太阳或月亮
+            const celestialY = canvas.height / 2 - Math.cos((game.time % game.dayDuration) / game.dayDuration * Math.PI * 2) * 200;
+            const celestialX = canvas.width / 2 + Math.sin((game.time % game.dayDuration) / game.dayDuration * Math.PI * 2) * 300;
+            
+            if (isDay) {
+                ctx.fillStyle = '#FFD700';
+                ctx.beginPath();
+                ctx.arc(celestialX, celestialY, 30, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                ctx.fillStyle = '#F0F0F0';
+                ctx.beginPath();
+                ctx.arc(celestialX, celestialY, 25, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // 收集所有方块并排序（从远到近）
+            const blocks = [];
+            for (let key in game.world) {
+                const [x, y, z] = key.split(',').map(Number);
+                blocks.push({ x, y, z, type: game.world[key] });
+            }
+            
+            blocks.sort((a, b) => {
+                const distA = a.x + a.z;
+                const distB = b.x + b.z;
+                return distA - distB;
+            });
+            
+            // 绘制方块
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.lineWidth = 1;
+            
+            blocks.forEach(block => {
+                drawBlock(block.x, block.y, block.z, block.type);
+            });
+            
+            // 绘制玩家
+            const playerPos = project3D(game.player.x, game.player.y, game.player.z);
+            ctx.fillStyle = '#FF6B6B';
+            ctx.fillRect(playerPos.x - 5, playerPos.y - 15, 10, 20);
+            ctx.fillStyle = '#FDBCB4';
+            ctx.fillRect(playerPos.x - 4, playerPos.y - 10, 8, 8);
+        }
+
+        // 显示消息
+        function showMessage(text) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.classList.add('show');
+            setTimeout(() => {
+                messageEl.classList.remove('show');
+            }, 2000);
+        }
+
+        // 更新UI
+        function updateUI() {
+            // 更新位置
+            document.getElementById('position').textContent = 
+                `${Math.floor(game.player.x)}, ${Math.floor(game.player.y)}, ${Math.floor(game.player.z)}`;
+            
+            // 更新方块数量
+            document.getElementById('blockCount').textContent = game.blockCount;
+            
+            // 更新FPS
+            document.getElementById('fps').textContent = Math.round(game.fps);
+            
+            // 更新时间
+            const isDay = (game.time % game.dayDuration) < (game.dayDuration / 2);
+            const timeIcon = document.getElementById('timeIcon');
+            const timeText = document.getElementById('timeText');
+            
+            if (isDay) {
+                timeIcon.className = 'sun-icon';
+                timeIcon.textContent = '☀️';
+                timeText.textContent = '白天';
+            } else {
+                timeIcon.className = 'moon-icon';
+                timeIcon.textContent = '🌙';
+                timeText.textContent = '夜晚';
+            }
+        }
+
+        // 游戏循环
+        function gameLoop(currentTime) {
+            // 计算FPS
+            const deltaTime = currentTime - game.lastFrameTime;
+            game.fps = 1000 / deltaTime;
+            game.lastFrameTime = currentTime;
+            
+            if (!game.isPaused && game.isStarted) {
+                // 更新游戏时间
+                game.time++;
+                
+                // 更新玩家
+                updatePlayer();
+                
+                // 更新UI
+                updateUI();
+            }
+            
+            // 渲染
+            render();
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        // 开始游戏
+        function startGame() {
+            document.getElementById('startMenu').style.display = 'none';
+            game.isStarted = true;
+            game.isPaused = false;
+            initWorld();
+            showMessage('欢迎来到方块世界！');
+        }
+
+        // 暂停游戏
+        function togglePause() {
+            if (!game.isStarted) return;
+            
+            game.isPaused = !game.isPaused;
+            if (game.isPaused) {
+                document.getElementById('startMenu').style.display = 'flex';
+                document.querySelector('.game-title').textContent = '游戏暂停';
+                document.querySelector('.game-subtitle').textContent = '按 ESC 继续';
+            } else {
+                document.getElementById('startMenu').style.display = 'none';
+            }
+        }
+
+        // 键盘事件
+        document.addEventListener('keydown', (e) => {
+            game.keys[e.code] = true;
+            
+            // 数字键切换方块（保留基于 e.key 的判断）
+            if (e.key >= '1' && e.key <= '9') {
+                const slots = document.querySelectorAll('.inventory-slot');
+                const index = parseInt(e.key) - 1;
+                if (slots[index]) {
+                    slots.forEach(s => s.classList.remove('active'));
+                    slots[index].classList.add('active');
+                    game.selectedBlock = slots[index].dataset.block;
+                    showMessage(`选择了 ${blockTypes[game.selectedBlock].icon} 方块`);
+                }
+            }
+            
+            // ESC 暂停
+            if (e.key === 'Escape') {
+                togglePause();
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            // 清理状态
+            game.keys[e.code] = false;
+
+            // 在 keyup 时切换飞行，避免按住产生多次切换
+            if (e.code === 'KeyF') {
+                game.player.flying = !game.player.flying;
+                showMessage(game.player.flying ? '飞行模式开启' : '飞行模式关闭');
+            }
+        });
+
+        // 鼠标事件
+        canvas.addEventListener('click', (e) => {
+            if (!game.isStarted || game.isPaused) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // 放置方块
+            const target = getTargetBlock();
+            if (target) {
+                // 在目标方块旁边放置新方块
+                const positions = [
+                    { x: target.x + 1, y: target.y, z: target.z },
+                    { x: target.x - 1, y: target.y, z: target.z },
+                    { x: target.x, y: target.y + 1, z: target.z },
+                    { x: target.x, y: target.y - 1, z: target.z },
+                    { x: target.x, y: target.y, z: target.z + 1 },
+                    { x: target.x, y: target.y, z: target.z - 1 }
+                ];
+                
+                for (let pos of positions) {
+                    if (!getBlock(pos.x, pos.y, pos.z)) {
+                        setBlock(pos.x, pos.y, pos.z, game.selectedBlock);
+                        showMessage(`放置了 ${blockTypes[game.selectedBlock].icon} 方块`);
+                        break;
+                    }
+                }
+            }
+        });
+
+        canvas.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            if (!game.isStarted || game.isPaused) return;
+            
+            // 破坏方块
+            const target = getTargetBlock();
+            if (target) {
+                setBlock(target.x, target.y, target.z, null);
+                showMessage(`破坏了 ${blockTypes[target.type].icon} 方块`);
+            }
+        });
+
+        // 库存栏点击
+        document.querySelectorAll('.inventory-slot').forEach((slot, index) => {
+            slot.addEventListener('click', () => {
+                document.querySelectorAll('.inventory-slot').forEach(s => s.classList.remove('active'));
+                slot.classList.add('active');
+                game.selectedBlock = slot.dataset.block;
+                showMessage(`选择了 ${blockTypes[game.selectedBlock].icon} 方块`);
+            });
+        });
+
+        // 防止页面滚动
+        window.addEventListener('wheel', (e) => {
+            if (game.isStarted && !game.isPaused) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // 启动游戏循环
+        requestAnimationFrame(gameLoop);
+    </script>
+</body>
+</html>

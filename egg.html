@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>彩蛋 - CBZ Studio</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/egg.css">
+</head>
+<body>
+    <a href="index.html" class="close-egg">
+        <span>✖</span>
+        <span>关闭</span>
+    </a>
+
+    <div class="egg-container">
+        <div class="egg-icon">🎉</div>
+        <h1 class="egg-title">恭喜你触发了彩蛋 “20130211”！</h1>
+        <p class="egg-subtitle">这是一个特别的惊喜，请欣赏下面的视频</p>
+        
+        <div class="video-container">
+            <video id="eggVideo" class="egg-video" controls>
+                <source src="files/egg.mp4" type="video/mp4">
+                <source src="files/egg.webm" type="video/webm">
+                您的浏览器不支持视频播放。
+            </video>
+            
+            <div class="video-controls">
+                <button id="playBtn" class="control-btn">▶️ 播放</button>
+                <button id="pauseBtn" class="control-btn">⏸️ 暂停</button>
+                <button id="muteBtn" class="control-btn">🔊</button>
+                <button id="fullscreenBtn" class="control-btn">🔳 全屏</button>
+                <button id="downloadBtn" class="control-btn">💾 下载</button>
+            </div>
+        </div>
+        
+        <div class="egg-stats">
+            <p>彩蛋触发次数: <span id="eggCount">1</span></p>
+            <p>触发时间: <span id="triggerTime"></span></p>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/egg.js"></script>
+    
+    <script>
+        // 记录彩蛋触发次数
+        document.addEventListener('DOMContentLoaded', function() {
+            const eggCount = Utils.storage.get('eggCount') || 0;
+            Utils.storage.set('eggCount', eggCount + 1);
+            
+            document.getElementById('eggCount').textContent = eggCount + 1;
+            document.getElementById('triggerTime').textContent = new Date().toLocaleString('zh-CN');
+        });
+    </script>
+</body>
+</html>

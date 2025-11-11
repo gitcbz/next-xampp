@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏中心 - CBZ Studio</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        .game-header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+        
+        .game-title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .game-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .game-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        
+        .game-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+        
+        .game-description {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .play-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .play-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .coming-soon {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .coming-soon:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-title {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-btn">
+        <span>←</span>
+        <span>返回主页</span>
+    </a>
+    
+    <div class="game-header">
+        <h1 class="game-title">🎮 游戏中心</h1>
+        <p>精选HTML5游戏，随时随地享受游戏乐趣</p>
+    </div>
+    
+    <div class="game-container">
+        <div class="games-grid">
+            <div class="game-card" onclick="playGame('snake')">
+                <div class="game-icon">🐍</div>
+                <h3 class="game-name">贪吃蛇</h3>
+                <p class="game-description">经典贪吃蛇游戏，控制小蛇吃食物，避免撞墙和撞到自己</p>
+                <button class="play-btn">开始游戏</button>
+            </div>
+            
+            <div class="game-card" onclick="playGame('tetris')">
+                <div class="game-icon">🧩</div>
+                <h3 class="game-name">俄罗斯方块</h3>
+                <p class="game-description">经典的俄罗斯方块游戏，消除方块获得高分</p>
+                <button class="play-btn">开始游戏</button>
+            </div>
+            
+            <div class="game-card" onclick="playGame('2048')">
+                <div class="game-icon">🔢</div>
+                <h3 class="game-name">2048</h3>
+                <p class="game-description">数字合并游戏，通过滑动合并相同数字达到2048</p>
+                <button class="play-btn">开始游戏</button>
+            </div>
+            
+            <div class="game-card" onclick="playGame('space')">
+                <div class="game-icon">🚀</div>
+                <h3 class="game-name">太空射击</h3>
+                <p class="game-description">太空射击游戏，消灭外星入侵者保卫地球</p>
+                <button class="play-btn">开始游戏</button>
+            </div>
+            
+            <div class="game-card" onclick="playGame('adventure')">
+                <div class="game-icon">🏃</div>
+                <h3 class="game-name">跑酷冒险</h3>
+                <p class="game-description">刺激的跑酷游戏，躲避障碍物收集金币</p>
+                <button class="play-btn">开始游戏</button>
+            </div>
+            
+            <div class="game-card" onclick="playGame('breakout')">
+                <div class="game-icon">🎯</div>
+                <h3 class="game-name">打靶游戏</h3>
+                <p class="game-description">精准射击游戏，测试你的反应和准确性</p>
+                <button class="play-btn">开始游戏</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/common.js"></script>
+    <script>
+        function playGame(gameName) {
+            Utils.showToast(`正在启动 ${getGameDisplayName(gameName)}...`, 'info');
+            
+            // 模拟游戏加载
+            setTimeout(() => {
+                // 这里可以跳转到具体的游戏页面
+                switch(gameName) {
+                    case 'snake':
+                        window.location.href = 'snake.html';
+                        break;
+                    case 'tetris':
+                        window.location.href = 'tetris.html';
+                        break;
+                    case 'breakout':
+                        window.location.href = 'breakout.html';
+                        break;
+                    case '2048':
+                        window.location.href = '2048.html';
+                        break;
+                    case 'adventure':
+                        window.location.href = 'adventure.html';
+                        break;
+                    case 'space':
+                        window.location.href = 'space.html';
+                        break;
+                    default:
+                        Utils.showToast('游戏开发中...', 'info');
+                }
+            }, 1000);
+        }
+        
+        function getGameDisplayName(gameName) {
+            const names = {
+                'snake': '贪吃蛇',
+                'tetris': '俄罗斯方块',
+                '2048': '2048',
+                'space': '太空射击',
+                'adventure': '跑酷冒险',
+                'breakout': '打靶游戏'
+            };
+            return names[gameName] || gameName;
+        }
+    </script>
+</body>
+</html>

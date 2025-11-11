@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简化版 2D 我的世界</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #world-grid {
+            display: grid;
+            grid-template-columns: repeat(20, 40px); /* 20 列 */
+            grid-template-rows: repeat(15, 40px);    /* 15 行 */
+            gap: 1px;
+            border: 2px solid #333;
+            background-color: #aaa;
+        }
+        .block {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ccc;
+        }
+        .grass { background-color: #4CAF50; }
+        .dirt { background-color: #795548; }
+        .stone { background-color: #9E9E9E; }
+        .wood { background-color: #8B4513; }
+        .player { background-color: #3F51B5; border-radius: 50%; } /* 玩家 */
+        .inventory {
+            margin-top: 20px;
+        }
+        .inventory button {
+            width: 40px;
+            height: 40px;
+            margin: 0 5px;
+            border: 1px solid #333;
+            cursor: pointer;
+        }
+        .selected {
+            border: 3px solid #FF5722 !important; /* 选中方块高亮 */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <h1>简化版 2D 我的世界</h1>
+        <p>使用 WASD 移动玩家。点击方块进行破坏。点击底部物品栏选择要放置的方块类型，然后点击世界放置。</p>
+        <div id="world-grid"></div>
+        
+        <div class="inventory">
+            <h3>物品栏 (点击选择)</h3>
+            <button class="grass selected" data-type="grass">草</button>
+            <button class="dirt" data-type="dirt">土</button>
+            <button class="stone" data-type="stone">石</button>
+            <button class="wood" data-type="wood">木</button>
+        </div>
+    </div>
+
+    <script>
+        // 游戏配置
+        const WORLD_WIDTH = 20;
+        const WORLD_HEIGHT = 15;
+        const PLAYER_START_X = Math.floor(WORLD_WIDTH / 2);
+        const PLAYER_START_Y = WORLD_HEIGHT - 2; // 地面附近
+
+        // 游戏状态
+        let world = [];
+        let playerX = PLAYER_START_X;
+        let playerY = PLAYER_START_Y;
+        let selectedBlockType = 'grass'; // 默认选择草方块
+
+        // 初始化世界
+        function initializeWorld() {
+            for (let y = 0; y < WORLD_HEIGHT; y++) {
+                world[y] = [];
+                for (let x = 0; x < WORLD_WIDTH; x++) {
+                    // 简单的地形生成：底部是石块，中间是土，上面是草
+                    if (y === WORLD_HEIGHT - 1) {
+                        world[y][x] = 'stone';
+                    } else if (y >= WORLD_HEIGHT - 3) {
+                        world[y][x] = 'dirt';
+                    } else if (y === WORLD_HEIGHT - 4) {
+                        world[y][x] = 'grass';
+                    } else {
+                        world[y][x] = null; // 空气
+                    }
+                }
+            }
+        }
+
+        // 渲染世界
+        function renderWorld() {
+            const gridElement = document.getElementById('world-grid');
+            gridElement.innerHTML = ''; // 清空现有内容
+
+            for (let y = 0; y < WORLD_HEIGHT; y++) {
+                for (let x = 0; x < WORLD_WIDTH; x++) {
+                    const blockCell = document.createElement('div');
+                    blockCell.classList.add('block');
+                    if (x === playerX && y === playerY) {
+                        blockCell.classList.add('player');
+                    } else if (world[y][x]) {
+                        blockCell.classList.add(world[y][x]);
+                    }
+                    // 添加点击事件用于破坏方块
+                    blockCell.addEventListener('click', () => handleBlockClick(x, y));
+                    gridElement.appendChild(blockCell);
+                }
+            }
+        }
+
+        // 处理方块点击（破坏或放置）
+        function handleBlockClick(x, y) {
+            if (x === playerX && y === playerY) {
+                // 不能点击玩家位置
+                return;
+            }
+
+            // 如果点击的是非空方块，则破坏它
+            if (world[y][x]) {
+                world[y][x] = null;
+            } else {
+                // 否则，放置选中的方块类型
+                world[y][x] = selectedBlockType;
+            }
+            renderWorld(); // 重新渲染
+        }
+
+        // 移动玩家
+        function movePlayer(dx, dy) {
+            const newX = playerX + dx;
+            const newY = playerY + dy;
+
+            // 检查边界
+            if (newX >= 0 && newX < WORLD_WIDTH && newY >= 0 && newY < WORLD_HEIGHT) {
+                // 检查目标位置是否是方块（简单碰撞检测）
+                if (!world[newY][newX]) {
+                    playerX = newX;
+                    playerY = newY;
+                    renderWorld();
+                }
+            }
+        }
+
+        // 键盘控制
+        document.addEventListener('keydown', (event) => {
+            switch(event.key.toLowerCase()) {
+                case 'a': movePlayer(-1, 0); break; // 左
+                case 'd': movePlayer(1, 0);  break; // 右
+                case 'w': movePlayer(0, -1); break; // 上
+                case 's': movePlayer(0, 1);  break; // 下
+            }
+        });
+
+        // 选择方块类型
+        document.querySelectorAll('.inventory button').forEach(button => {
+            button.addEventListener('click', () => {
+                // 移除之前选中的高亮
+                document.querySelector('.inventory button.selected').classList.remove('selected');
+                // 添加当前选中的高亮
+                button.classList.add('selected');
+                // 更新选中的方块类型
+                selectedBlockType = button.dataset.type;
+            });
+        });
+
+        // 游戏启动
+        initializeWorld();
+        renderWorld();
+    </script>
+
+</body>
+</html>
