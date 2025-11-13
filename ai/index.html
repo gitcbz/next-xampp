@@ -3,598 +3,514 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenAI API Studio - 专业版</title>
+    <title>OpenAI API Studio - 开发者工具</title>
     <style>
-        :root {
-            --primary: #10b981;
-            --primary-dark: #059669;
-            --secondary: #6366f1;
-            --accent: #f59e0b;
-            --danger: #ef4444;
-            --dark: #1e293b;
-            --darker: #0f172a;
-            --light: #f1f5f9;
-            --gray: #94a3b8;
-            --card-bg: #2d3748;
-            --border: #374151;
-            --success: #22c55e;
-            --warning: #f59e0b;
-        }
-        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
+        :root {
+            --primary-color: #10a37f;
+            --secondary-color: #19c37d;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f7f7f8;
+            --bg-tertiary: #ececf1;
+            --text-primary: #202123;
+            --text-secondary: #6e6e80;
+            --border-color: #e5e5e5;
+            --error-color: #ef4444;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #343541;
+            --bg-secondary: #202123;
+            --bg-tertiary: #444654;
+            --text-primary: #ececf1;
+            --text-secondary: #acacbe;
+            --border-color: #4e4f60;
+        }
+
         body {
-            background: linear-gradient(135deg, var(--darker), #1a202c);
-            color: var(--light);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        /* 头部样式 */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 25px 0;
-            margin-bottom: 30px;
-            border-bottom: 2px solid rgba(255,255,255,0.1);
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        
-        h1 {
-            font-size: 2.5rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .logo-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-        }
-        
-        .api-key-container {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        
-        .input-group {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        
-        .api-key-input {
-            background: var(--card-bg);
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            padding: 12px 15px;
-            color: white;
-            width: 300px;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        
-        .api-key-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-        }
-        
-        .toggle-visibility {
-            position: absolute;
-            right: 10px;
-            background: none;
-            border: none;
-            color: var(--gray);
-            cursor: pointer;
-            padding: 5px;
-        }
-        
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 12px 24px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            position: relative;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
             overflow: hidden;
         }
-        
-        .btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+
+        /* 布局容器 */
+        .app-container {
+            display: flex;
+            height: 100vh;
         }
-        
-        .btn:active {
-            transform: translateY(0);
+
+        /* 侧边栏 */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s ease;
         }
-        
-        .btn-secondary {
-            background: var(--secondary);
+
+        .sidebar.collapsed {
+            margin-left: -280px;
         }
-        
-        .btn-secondary:hover {
-            background: #4f46e5;
-        }
-        
-        .btn-danger {
-            background: var(--danger);
-        }
-        
-        .btn-danger:hover {
-            background: #dc2626;
-        }
-        
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        /* 状态栏 */
-        .status-bar {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .status-card {
-            background: var(--card-bg);
-            border-radius: 12px;
+
+        .sidebar-header {
             padding: 20px;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            gap: 15px;
-            border: 1px solid var(--border);
-            transition: all 0.3s;
+            justify-content: space-between;
         }
-        
-        .status-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        .status-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
+
+        .logo {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-        
-        .status-icon.success {
-            background: rgba(34, 197, 94, 0.2);
-            color: var(--success);
-        }
-        
-        .status-icon.warning {
-            background: rgba(245, 158, 11, 0.2);
-            color: var(--warning);
-        }
-        
-        .status-icon.info {
-            background: rgba(99, 102, 241, 0.2);
-            color: var(--secondary);
-        }
-        
-        .status-content h3 {
-            font-size: 14px;
-            color: var(--gray);
-            margin-bottom: 5px;
-        }
-        
-        .status-content p {
+            gap: 10px;
             font-size: 18px;
             font-weight: 600;
         }
-        
-        /* 主要布局 */
-        .main-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-        
-        .card {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            border: 1px solid var(--border);
-            transition: all 0.3s;
-        }
-        
-        .card:hover {
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-        }
-        
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .card-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--gray);
-            font-size: 14px;
-        }
-        
-        textarea, select, input[type="text"], input[type="number"] {
-            width: 100%;
-            background: #374151;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            padding: 12px 15px;
-            color: white;
-            font-size: 15px;
-            transition: all 0.3s;
-        }
-        
-        textarea:focus, select:focus, input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-        }
-        
-        textarea {
-            min-height: 150px;
-            resize: vertical;
-            font-family: 'Consolas', 'Monaco', monospace;
-        }
-        
-        .response-container {
-            min-height: 300px;
-            background: #374151;
-            border-radius: 10px;
-            padding: 20px;
-            overflow: auto;
-            white-space: pre-wrap;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 14px;
-            line-height: 1.6;
-            border: 2px solid var(--border);
-            position: relative;
-        }
-        
-        .response-container.loading {
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--gray);
-        }
-        
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid var(--border);
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 15px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .copy-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: var(--primary);
             color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 6px 12px;
+            font-weight: bold;
+        }
+
+        /* 导航菜单 */
+        .nav-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin-bottom: 4px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 12px;
-            transition: all 0.3s;
+            transition: all 0.2s;
+            color: var(--text-secondary);
         }
-        
-        .copy-btn:hover {
-            background: var(--primary-dark);
+
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
         }
-        
-        .copy-btn.copied {
-            background: var(--success);
+
+        .nav-item.active {
+            background: var(--primary-color);
+            color: white;
         }
-        
-        /* 滑块样式 */
-        .slider-container {
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 顶部工具栏 */
+        .toolbar {
+            height: 60px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            gap: 20px;
+        }
+
+        .toolbar-left {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        
-        input[type="range"] {
-            flex: 1;
-            -webkit-appearance: none;
-            appearance: none;
-            height: 6px;
-            background: var(--border);
-            border-radius: 3px;
-            outline: none;
-        }
-        
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: var(--primary);
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
-        }
-        
-        .slider-value {
-            min-width: 40px;
-            text-align: center;
-            font-weight: 600;
-            color: var(--primary);
-        }
-        
-        /* 历史记录 */
-        .history-container {
-            max-height: 500px;
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-        
-        .history-container::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        .history-container::-webkit-scrollbar-track {
-            background: var(--border);
-            border-radius: 4px;
-        }
-        
-        .history-container::-webkit-scrollbar-thumb {
-            background: var(--gray);
-            border-radius: 4px;
-        }
-        
-        .history-item {
-            background: #374151;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-            position: relative;
-        }
-        
-        .history-item:hover {
-            background: #4b5563;
-            transform: translateX(5px);
-            border-color: var(--primary);
-        }
-        
-        .history-item.selected {
-            border-color: var(--primary);
-            background: rgba(16, 185, 129, 0.1);
-        }
-        
-        .history-header {
+
+        .toolbar-right {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-            color: var(--gray);
+            gap: 15px;
         }
-        
-        .history-request {
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: var(--light);
-        }
-        
-        .history-response {
-            font-size: 0.9rem;
-            color: var(--gray);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-        }
-        
-        .history-actions {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            display: flex;
-            gap: 5px;
-        }
-        
-        .history-action-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            color: var(--gray);
+
+        .btn {
+            padding: 8px 16px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
             border-radius: 6px;
-            padding: 5px 8px;
             cursor: pointer;
-            font-size: 12px;
-            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        
-        .history-action-btn:hover {
-            background: var(--primary);
+
+        .btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .btn-icon {
+            padding: 8px;
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .btn-icon:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        /* 工作区 */
+        .workspace {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .workspace-pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+        }
+
+        .pane-header {
+            height: 50px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .pane-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .pane-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        /* 配置面板 */
+        .config-section {
+            margin-bottom: 30px;
+        }
+
+        .config-section h3 {
+            margin-bottom: 15px;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(16, 163, 127, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* 对话区域 */
+        .chat-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .message.assistant .message-avatar {
+            background: var(--primary-color);
             color: white;
         }
-        
-        /* 批量处理 */
-        .batch-controls {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
+
+        .message.user .message-avatar {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
         }
-        
-        .queue-info {
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid var(--secondary);
-            border-radius: 8px;
-            padding: 10px 15px;
-            margin-top: 15px;
-            font-size: 14px;
-            color: var(--secondary);
+
+        .message-content {
+            flex: 1;
+            max-width: 70%;
         }
-        
-        /* 可视化 */
-        .visualization {
-            height: 200px;
-            background: #374151;
-            border-radius: 10px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-around;
-            padding: 20px;
-            margin-top: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .visualization-bar {
-            width: 30px;
-            background: linear-gradient(to top, var(--primary), var(--secondary));
-            border-radius: 4px 4px 0 0;
-            transition: all 0.3s;
+
+        .message-bubble {
+            background: var(--bg-secondary);
+            padding: 12px 16px;
+            border-radius: 12px;
             position: relative;
         }
-        
-        .visualization-bar:hover {
-            transform: scaleY(1.1);
-            filter: brightness(1.2);
+
+        .message.user .message-bubble {
+            background: var(--primary-color);
+            color: white;
         }
-        
-        .visualization-label {
-            position: absolute;
-            bottom: -25px;
-            left: 50%;
-            transform: translateX(-50%);
+
+        .message-text {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.5;
+        }
+
+        .message-time {
             font-size: 12px;
-            color: var(--gray);
+            color: var(--text-secondary);
+            margin-top: 4px;
         }
-        
-        /* 标签页 */
-        .tabs {
+
+        .message-actions {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--border);
+            gap: 8px;
+            margin-top: 8px;
         }
-        
-        .tab {
-            padding: 10px 20px;
-            background: none;
+
+        .message-action {
+            padding: 4px 8px;
+            background: var(--bg-tertiary);
             border: none;
-            color: var(--gray);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            font-size: 12px;
             cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s;
-            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
         }
-        
-        .tab:hover {
-            color: var(--light);
+
+        .message-action:hover {
+            background: var(--border-color);
+            color: var(--text-primary);
         }
-        
-        .tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        /* 高级设置 */
-        .advanced-settings {
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid var(--secondary);
-            border-radius: 10px;
+
+        /* 输入区域 */
+        .input-container {
             padding: 20px;
-            margin-top: 20px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-secondary);
         }
-        
-        .settings-grid {
+
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .input-field {
+            flex: 1;
+        }
+
+        .input-textarea {
+            width: 100%;
+            min-height: 60px;
+            max-height: 200px;
+            padding: 12px 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+            transition: all 0.2s;
+        }
+
+        .input-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(16, 163, 127, 0.1);
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* 历史记录 */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-item {
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .history-item:hover {
+            background: var(--bg-tertiary);
+            transform: translateX(4px);
+        }
+
+        .history-item-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .history-item-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* 批量处理 */
+        .batch-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
+            height: 100%;
         }
-        
+
+        .batch-input, .batch-output {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .batch-textarea {
+            flex: 1;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            resize: none;
+        }
+
+        /* 统计面板 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
         /* 模态框 */
         .modal {
             display: none;
@@ -603,1011 +519,926 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 1000;
             justify-content: center;
             align-items: center;
         }
-        
+
         .modal.show {
             display: flex;
         }
-        
+
         .modal-content {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 30px;
-            max-width: 600px;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 500px;
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
-            border: 2px solid var(--border);
+            box-shadow: var(--shadow-lg);
         }
-        
+
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
         }
-        
+
         .modal-title {
-            font-size: 1.5rem;
+            font-size: 20px;
             font-weight: 600;
-            color: var(--primary);
         }
-        
+
         .modal-close {
-            background: none;
+            width: 32px;
+            height: 32px;
             border: none;
-            color: var(--gray);
-            font-size: 24px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .modal-close:hover {
-            color: var(--danger);
-        }
-        
-        /* 响应式设计 */
-        @media (max-width: 1200px) {
-            .main-layout {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .api-key-container {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .api-key-input {
-                width: 100%;
-            }
-            
-            .status-bar {
-                grid-template-columns: 1fr;
-            }
-            
-            .batch-controls {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-        
-        /* 动画 */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease;
-        }
-        
-        /* 提示工具 */
-        .tooltip {
-            position: relative;
-        }
-        
-        .tooltip::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--darker);
-            color: var(--light);
-            padding: 5px 10px;
+            background: var(--bg-tertiary);
             border-radius: 6px;
-            font-size: 12px;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
         }
-        
-        .tooltip:hover::after {
-            opacity: 1;
+
+        .modal-close:hover {
+            background: var(--border-color);
         }
-        
+
+        /* 标签页 */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab {
+            padding: 10px 16px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         /* 进度条 */
         .progress-bar {
             width: 100%;
-            height: 8px;
-            background: var(--border);
-            border-radius: 4px;
+            height: 4px;
+            background: var(--bg-tertiary);
+            border-radius: 2px;
             overflow: hidden;
             margin: 10px 0;
         }
-        
+
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: var(--primary-color);
             transition: width 0.3s ease;
         }
-        
-        /* 通知 */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--card-bg);
-            border: 2px solid var(--primary);
-            border-radius: 10px;
-            padding: 15px 20px;
-            color: var(--light);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            z-index: 2000;
-            display: flex;
+
+        /* 状态指示器 */
+        .status-indicator {
+            display: inline-flex;
             align-items: center;
-            gap: 10px;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
+            gap: 8px;
+            padding: 6px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
         }
-        
-        .notification.show {
-            transform: translateX(0);
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-secondary);
         }
-        
-        .notification.success {
-            border-color: var(--success);
+
+        .status-indicator.online .status-dot {
+            background: var(--success-color);
+            animation: pulse 2s infinite;
         }
-        
-        .notification.error {
-            border-color: var(--danger);
+
+        .status-indicator.offline .status-dot {
+            background: var(--error-color);
         }
-        
-        .notification.warning {
-            border-color: var(--warning);
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                z-index: 100;
+                height: 100%;
+            }
+
+            .batch-container {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 代码高亮 */
+        .code-block {
+            background: var(--bg-tertiary);
+            padding: 12px;
+            border-radius: 6px;
+            margin: 8px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 8px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        /* 滑动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>
-                <div class="logo-icon">🤖</div>
-                OpenAI API Studio
-            </h1>
-            <div class="api-key-container">
-                <div class="input-group">
-                    <input type="password" id="api-key-input" class="api-key-input" placeholder="输入 OpenAI API Key">
-                    <button class="toggle-visibility" onclick="toggleApiKeyVisibility()">👁️</button>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">AI</div>
+                    <span>API Studio</span>
                 </div>
-                <input type="text" id="proxy-url-input" class="api-key-input" placeholder="代理地址 (可选)" style="width: 300px;">
-                <button id="connect-btn" class="btn" onclick="saveSettings()">
-                    <span>💾</span> 保存设置
-                </button>
+                <button class="btn-icon" onclick="toggleSidebar()">☰</button>
             </div>
-        </header>
-        
-        <!-- 状态栏 -->
-        <div class="status-bar">
-            <div class="status-card">
-                <div class="status-icon success">🔗</div>
-                <div class="status-content">
-                    <h3>连接状态</h3>
-                    <p id="connection-status">未连接</p>
+            
+            <nav class="nav-menu">
+                <div class="nav-item active" onclick="switchTab('chat')">
+                    <span class="nav-icon">💬</span>
+                    <span>对话</span>
                 </div>
-            </div>
-            <div class="status-card">
-                <div class="status-icon info">📊</div>
-                <div class="status-content">
-                    <h3>请求统计</h3>
-                    <p id="request-stats">0 次</p>
+                <div class="nav-item" onclick="switchTab('config')">
+                    <span class="nav-icon">⚙️</span>
+                    <span>配置</span>
                 </div>
-            </div>
-            <div class="status-card">
-                <div class="status-icon warning">💰</div>
-                <div class="status-content">
-                    <h3>Token 使用</h3>
-                    <p id="token-usage">0</p>
+                <div class="nav-item" onclick="switchTab('history')">
+                    <span class="nav-icon">📚</span>
+                    <span>历史记录</span>
                 </div>
-            </div>
-            <div class="status-card">
-                <div class="status-icon info">⚡</div>
-                <div class="status-content">
-                    <h3>响应时间</h3>
-                    <p id="response-time">0ms</p>
+                <div class="nav-item" onclick="switchTab('batch')">
+                    <span class="nav-icon">📦</span>
+                    <span>批量处理</span>
                 </div>
-            </div>
-        </div>
-        
-        <!-- 主要内容区 -->
-        <div class="main-layout">
-            <!-- 左侧：请求配置 -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <span>📝</span> API 请求配置
-                    </h2>
-                    <button id="send-btn" class="btn" onclick="sendRequest()">
-                        <span>🚀</span> 发送请求
+                <div class="nav-item" onclick="switchTab('analytics')">
+                    <span class="nav-icon">📊</span>
+                    <span>数据分析</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('templates')">
+                    <span class="nav-icon">📝</span>
+                    <span>模板库</span>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 顶部工具栏 -->
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <button class="btn-icon" onclick="toggleSidebar()">☰</button>
+                    <div class="status-indicator online" id="connectionStatus">
+                        <span class="status-dot"></span>
+                        <span>已连接</span>
+                    </div>
+                </div>
+                
+                <div class="toolbar-right">
+                    <button class="btn btn-secondary" onclick="exportData()">
+                        <span>📥</span>
+                        <span>导出</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="importData()">
+                        <span>📤</span>
+                        <span>导入</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="toggleTheme()">
+                        <span>🌙</span>
+                        <span>主题</span>
+                    </button>
+                    <button class="btn" onclick="showSettings()">
+                        <span>⚙️</span>
+                        <span>设置</span>
                     </button>
                 </div>
-                
-                <div class="tabs">
-                    <button class="tab active" onclick="switchTab('basic')">基础设置</button>
-                    <button class="tab" onclick="switchTab('advanced')">高级设置</button>
-                    <button class="tab" onclick="switchTab('templates')">模板库</button>
-                </div>
-                
-                <!-- 基础设置 -->
-                <div id="basic-tab" class="tab-content active">
-                    <div class="form-group">
-                        <label for="model-select">模型选择</label>
-                        <select id="model-select">
-                            <option value="gpt-4">GPT-4</option>
-                            <option value="gpt-4-32k">GPT-4 32K</option>
-                            <option value="gpt-3.5-turbo" selected>GPT-3.5 Turbo</option>
-                            <option value="gpt-3.5-turbo-16k">GPT-3.5 Turbo 16K</option>
-                            <option value="text-davinci-003">Davinci-003</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="prompt-textarea">提示词 (Prompt)</label>
-                        <textarea id="prompt-textarea" placeholder="输入您的提示词...">请用简洁的语言解释量子计算的基本原理</textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="temperature">Temperature (创造性)</label>
-                        <div class="slider-container">
-                            <input type="range" id="temperature" min="0" max="2" step="0.1" value="0.7">
-                            <span class="slider-value" id="temp-value">0.7</span>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="max-tokens">Max Tokens</label>
-                        <input type="number" id="max-tokens" value="1000" min="1" max="4096">
-                    </div>
-                </div>
-                
-                <!-- 高级设置 -->
-                <div id="advanced-tab" class="tab-content">
-                    <div class="form-group">
-                        <label for="top-p">Top P</label>
-                        <div class="slider-container">
-                            <input type="range" id="top-p" min="0" max="1" step="0.1" value="1">
-                            <span class="slider-value" id="topp-value">1.0</span>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="frequency-penalty">Frequency Penalty</label>
-                        <div class="slider-container">
-                            <input type="range" id="frequency-penalty" min="-2" max="2" step="0.1" value="0">
-                            <span class="slider-value" id="freq-value">0.0</span>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="presence-penalty">Presence Penalty</label>
-                        <div class="slider-container">
-                            <input type="range" id="presence-penalty" min="-2" max="2" step="0.1" value="0">
-                            <span class="slider-value" id="pres-value">0.0</span>
-                        </div>
-                    </div>
-                    
-                    <div class="advanced-settings">
-                        <h4>系统设置</h4>
-                        <div class="settings-grid">
-                            <div class="form-group">
-                                <label for="timeout">请求超时 (秒)</label>
-                                <input type="number" id="timeout" value="30" min="5" max="300">
+            </div>
+
+            <!-- 工作区 -->
+            <div class="workspace">
+                <!-- 对话界面 -->
+                <div class="workspace-pane" id="chatPane">
+                    <div class="chat-container">
+                        <div class="messages-container" id="messagesContainer">
+                            <div class="message assistant">
+                                <div class="message-avatar">AI</div>
+                                <div class="message-content">
+                                    <div class="message-bubble">
+                                        <div class="message-text">👋 欢迎使用 OpenAI API Studio！
+
+我是你的AI助手，可以帮助你：
+• 回答问题和提供建议
+• 编写和调试代码
+• 文本创作和翻译
+• 数据分析和可视化
+• 以及更多功能...
+
+请配置你的API密钥后开始对话吧！</div>
+                                    </div>
+                                    <div class="message-time">刚刚</div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="retry-count">重试次数</label>
-                                <input type="number" id="retry-count" value="3" min="0" max="10">
+                        </div>
+                        
+                        <div class="input-container">
+                            <div class="input-wrapper">
+                                <div class="input-field">
+                                    <textarea 
+                                        class="input-textarea" 
+                                        id="messageInput"
+                                        placeholder="输入你的消息... (Shift+Enter 换行，Enter 发送)"
+                                        rows="1"
+                                    ></textarea>
+                                </div>
+                                <div class="input-actions">
+                                    <button class="btn btn-secondary" onclick="attachFile()">📎</button>
+                                    <button class="btn" onclick="sendMessage()" id="sendBtn">
+                                        <span>发送</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- 模板库 -->
-                <div id="templates-tab" class="tab-content">
-                    <div class="form-group">
-                        <label>快速模板</label>
-                        <select id="template-select" onchange="applyTemplate()">
-                            <option value="">选择模板...</option>
-                            <option value="explain">解释概念</option>
-                            <option value="code">代码生成</option>
-                            <option value="translate">翻译</option>
-                            <option value="summarize">总结</option>
-                            <option value="creative">创意写作</option>
-                        </select>
+
+                <!-- 配置界面 -->
+                <div class="workspace-pane" id="configPane" style="display: none;">
+                    <div class="pane-content">
+                        <div class="config-section">
+                            <h3>🔑 API 配置</h3>
+                            <div class="form-group">
+                                <label class="form-label">API Key</label>
+                                <input type="password" class="form-input" id="apiKey" placeholder="sk-...">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Base URL</label>
+                                <input type="text" class="form-input" id="baseUrl" value="https://api.deepseek.com/v1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Organization ID (可选)</label>
+                                <input type="text" class="form-input" id="orgId" placeholder="org-...">
+                            </div>
+                        </div>
+
+                        <div class="config-section">
+                            <h3>🤖 模型配置</h3>
+                            <div class="form-group">
+                                <label class="form-label">模型</label>
+                                <select class="form-select" id="model">
+                                    <option value="gpt-4">GPT-4</option>
+                                    <option value="gpt-4-32k">GPT-4 32K</option>
+                                    <option value="gpt-3.5-turbo" selected>GPT-3.5 Turbo</option>
+                                    <option value="gpt-3.5-turbo-16k">GPT-3.5 Turbo 16K</option>
+                                    <option value="deepseek-reasoner">deepseek-reasoner</option>
+                                    <option value="deepseek-chat">deepseek-chat</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Temperature (0-2)</label>
+                                <input type="range" class="form-input" id="temperature" min="0" max="2" step="0.1" value="0.7">
+                                <small>当前值: <span id="tempValue">0.7</span></small>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Max Tokens</label>
+                                <input type="number" class="form-input" id="maxTokens" value="2000" min="1" max="4096">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Top P</label>
+                                <input type="range" class="form-input" id="topP" min="0" max="1" step="0.1" value="1">
+                                <small>当前值: <span id="topPValue">1</span></small>
+                            </div>
+                        </div>
+
+                        <div class="config-section">
+                            <h3>🚀 高级设置</h3>
+                            <div class="form-group">
+                                <label class="form-label">代理设置</label>
+                                <input type="text" class="form-input" id="proxy" placeholder="http://proxy.example.com:8080">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">请求超时 (秒)</label>
+                                <input type="number" class="form-input" id="timeout" value="30" min="1" max="300">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">重试次数</label>
+                                <input type="number" class="form-input" id="retries" value="3" min="0" max="10">
+                            </div>
+                        </div>
+
+                        <button class="btn" onclick="saveConfig()">保存配置</button>
+                        <button class="btn btn-secondary" onclick="testConnection()">测试连接</button>
                     </div>
-                    <div class="form-group">
-                        <label>自定义模板</label>
-                        <textarea id="custom-template" placeholder="输入自定义模板..."></textarea>
+                </div>
+
+                <!-- 历史记录界面 -->
+                <div class="workspace-pane" id="historyPane" style="display: none;">
+                    <div class="pane-content">
+                        <div class="pane-header">
+                            <h3 class="pane-title">对话历史</h3>
+                            <button class="btn btn-secondary" onclick="clearHistory()">清空历史</button>
+                        </div>
+                        <div class="history-list" id="historyList">
+                            <!-- 历史记录项将动态生成 -->
+                        </div>
                     </div>
                 </div>
-                
-                <div class="batch-controls">
-                    <button id="process-queue-btn" class="btn" onclick="processQueue()">
-                        <span>⚡</span> 批量处理
-                    </button>
-                    <button id="add-queue-btn" class="btn btn-secondary" onclick="addToQueue()">
-                        <span>➕</span> 添加到队列
-                    </button>
-                    <button id="clear-queue-btn" class="btn btn-secondary" onclick="clearQueue()">
-                        <span>🗑️</span> 清空队列
-                    </button>
-                </div>
-                
-                <div class="queue-info" id="queue-info" style="display: none;">
-                    队列中有 <span id="queue-count">0</span> 个任务待处理
-                </div>
-            </div>
-            
-            <!-- 右侧：响应显示 -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <span>📡</span> API 响应
-                    </h2>
-                    <div class="status-indicator">
-                        <div class="status-dot" id="status-dot"></div>
-                        <span id="status-text">未连接</span>
+
+                <!-- 批量处理界面 -->
+                <div class="workspace-pane" id="batchPane" style="display: none;">
+                    <div class="pane-content">
+                        <h3>批量请求处理</h3>
+                        <div class="batch-container">
+                            <div class="batch-input">
+                                <h4>输入 (每行一个请求)</h4>
+                                <textarea class="batch-textarea" id="batchInput" placeholder="请输入多个请求，每行一个..."></textarea>
+                                <div style="margin-top: 10px;">
+                                    <button class="btn" onclick="processBatch()">开始处理</button>
+                                    <button class="btn btn-secondary" onclick="clearBatch()">清空</button>
+                                </div>
+                            </div>
+                            <div class="batch-output">
+                                <h4>输出结果</h4>
+                                <textarea class="batch-textarea" id="batchOutput" readonly placeholder="处理结果将显示在这里..."></textarea>
+                                <div style="margin-top: 10px;">
+                                    <button class="btn btn-secondary" onclick="copyBatchResults()">复制结果</button>
+                                    <button class="btn btn-secondary" onclick="exportBatchResults()">导出结果</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="response-container" id="response-container">
-                    等待发送请求...
+
+                <!-- 数据分析界面 -->
+                <div class="workspace-pane" id="analyticsPane" style="display: none;">
+                    <div class="pane-content">
+                        <h3>使用统计</h3>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="totalRequests">0</div>
+                                <div class="stat-label">总请求数</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="totalTokens">0</div>
+                                <div class="stat-label">总Token数</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="avgResponseTime">0ms</div>
+                                <div class="stat-label">平均响应时间</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="successRate">100%</div>
+                                <div class="stat-label">成功率</div>
+                            </div>
+                        </div>
+                        
+                        <h4>每日使用趋势</h4>
+                        <canvas id="usageChart" width="400" height="200"></canvas>
+                    </div>
                 </div>
-                <button class="copy-btn" id="copy-btn" onclick="copyResponse()">📋 复制</button>
-                
-                <!-- 响应可视化 -->
-                <div class="visualization" id="visualization">
-                    <!-- 动态生成的图表 -->
+
+                <!-- 模板库界面 -->
+                <div class="workspace-pane" id="templatesPane" style="display: none;">
+                    <div class="pane-content">
+                        <div class="pane-header">
+                            <h3 class="pane-title">提示词模板</h3>
+                            <button class="btn" onclick="addTemplate()">添加模板</button>
+                        </div>
+                        <div class="tabs">
+                            <button class="tab active" onclick="switchTemplateTab('coding')">编程</button>
+                            <button class="tab" onclick="switchTemplateTab('writing')">写作</button>
+                            <button class="tab" onclick="switchTemplateTab('analysis')">分析</button>
+                            <button class="tab" onclick="switchTemplateTab('custom')">自定义</button>
+                        </div>
+                        <div id="templatesList">
+                            <!-- 模板列表将动态生成 -->
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- 历史记录 -->
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">
-                    <span>📚</span> 请求历史
-                </h2>
-                <div style="display: flex; gap: 10px;">
-                    <button id="export-history-btn" class="btn btn-secondary" onclick="exportHistory()">
-                        <span>📥</span> 导出历史
-                    </button>
-                    <button id="clear-history-btn" class="btn btn-secondary" onclick="clearHistory()">
-                        <span>🗑️</span> 清空历史
-                    </button>
-                </div>
-            </div>
-            
-            <div class="history-container" id="history-container">
-                <!-- 历史记录项将动态生成 -->
-            </div>
-        </div>
+        </main>
     </div>
-    
-    <!-- 模态框 -->
-    <div class="modal" id="settings-modal">
+
+    <!-- 设置模态框 -->
+    <div class="modal" id="settingsModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">⚙️ 设置</h2>
-                <button class="modal-close" onclick="closeModal('settings-modal')">✕</button>
+                <h3 class="modal-title">设置</h3>
+                <button class="modal-close" onclick="closeModal('settingsModal')">✕</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>主题</label>
-                    <select id="theme-select">
-                        <option value="dark">深色主题</option>
-                        <option value="light">浅色主题</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>语言</label>
-                    <select id="language-select">
+                    <label class="form-label">语言</label>
+                    <select class="form-select">
                         <option value="zh-CN">简体中文</option>
                         <option value="en-US">English</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="auto-save" checked> 自动保存历史
-                    </label>
+                    <label class="form-label">字体大小</label>
+                    <input type="range" class="form-input" min="12" max="20" value="14">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">自动保存对话</label>
+                    <input type="checkbox" checked>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- 通知容器 -->
-    <div id="notification-container"></div>
 
     <script>
         // 全局状态管理
         const state = {
-            apiKey: '',
-            proxyUrl: '',
-            isConnected: false,
-            requestCount: 0,
-            totalTokens: 0,
-            history: [],
-            queue: [],
-            currentTab: 'basic',
-            isProcessing: false
-        };
-
-        // 模板库
-        const templates = {
-            explain: '请详细解释{topic}的概念、原理和应用场景。',
-            code: '请编写{language}代码来实现{function}功能，并添加详细注释。',
-            translate: '请将以下{from_lang}内容翻译成{to_lang}：\n{text}',
-            summarize: '请总结以下内容的要点：\n{content}',
-            creative: '请以{style}风格写一篇关于{topic}的{type}。'
+            currentTab: 'chat',
+            conversations: [],
+            currentConversation: null,
+            config: {
+                apiKey: '',
+                baseUrl: 'https://api.deepseek.com/v1',
+                orgId: '',
+                model: 'gpt-3.5-turbo',
+                temperature: 0.7,
+                maxTokens: 2000,
+                topP: 1,
+                proxy: '',
+                timeout: 30,
+                retries: 3
+            },
+            stats: {
+                totalRequests: 0,
+                totalTokens: 0,
+                totalResponseTime: 0,
+                successRequests: 0
+            },
+            templates: {
+                coding: [
+                    { name: '代码审查', prompt: '请审查以下代码，提供改进建议：\n\n{code}' },
+                    { name: '调试助手', prompt: '我遇到了一个bug，请帮我分析：\n\n{description}' },
+                    { name: '代码优化', prompt: '请优化以下代码的性能：\n\n{code}' }
+                ],
+                writing: [
+                    { name: '文章大纲', prompt: '请为以下主题创建大纲：\n\n{topic}' },
+                    { name: '邮件撰写', prompt: '请帮我写一封关于{subject}的邮件：\n\n{details}' },
+                    { name: '文案改写', prompt: '请改写以下文案，使其更加吸引人：\n\n{text}' }
+                ],
+                analysis: [
+                    { name: '数据分析', prompt: '请分析以下数据：\n\n{data}' },
+                    { name: '趋势预测', prompt: '基于以下信息预测趋势：\n\n{info}' },
+                    { name: 'SWOT分析', prompt: '请对以下进行SWOT分析：\n\n{subject}' }
+                ],
+                custom: []
+            }
         };
 
         // 初始化
         document.addEventListener('DOMContentLoaded', () => {
-            loadSettings();
-            loadHistory();
+            loadConfig();
+            loadConversations();
+            updateStats();
             initializeEventListeners();
-            updateStatus();
-            renderHistory();
-            updateQueueInfo();
+            renderTemplates();
         });
 
         // 事件监听器初始化
         function initializeEventListeners() {
-            // 温度滑块
-            const tempSlider = document.getElementById('temperature');
-            const tempValue = document.getElementById('temp-value');
-            tempSlider.addEventListener('input', () => {
-                tempValue.textContent = tempSlider.value;
-            });
-
-            // Top P 滑块
-            const topPSlider = document.getElementById('top-p');
-            const topPValue = document.getElementById('topp-value');
-            topPSlider.addEventListener('input', () => {
-                topPValue.textContent = topPSlider.value;
-            });
-
-            // Frequency Penalty 滑块
-            const freqSlider = document.getElementById('frequency-penalty');
-            const freqValue = document.getElementById('freq-value');
-            freqSlider.addEventListener('input', () => {
-                freqValue.textContent = freqSlider.value;
-            });
-
-            // Presence Penalty 滑块
-            const presSlider = document.getElementById('presence-penalty');
-            const presValue = document.getElementById('pres-value');
-            presSlider.addEventListener('input', () => {
-                presValue.textContent = presSlider.value;
-            });
-
-            // 快捷键支持
-            document.addEventListener('keydown', (e) => {
-                if (e.ctrlKey && e.key === 'Enter') {
-                    sendRequest();
+            // 消息输入框
+            const messageInput = document.getElementById('messageInput');
+            messageInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
                 }
             });
-        }
 
-        // 设置管理
-        function loadSettings() {
-            state.apiKey = localStorage.getItem('openai_api_key') || '';
-            state.proxyUrl = localStorage.getItem('openai_proxy_url') || '';
-            
-            document.getElementById('api-key-input').value = state.apiKey;
-            document.getElementById('proxy-url-input').value = state.proxyUrl;
-            
-            if (state.apiKey || state.proxyUrl) {
-                state.isConnected = true;
-                updateConnectionStatus(true);
-            }
-        }
+            // 自动调整输入框高度
+            messageInput.addEventListener('input', () => {
+                messageInput.style.height = 'auto';
+                messageInput.style.height = messageInput.scrollHeight + 'px';
+            });
 
-        function saveSettings() {
-            const apiKey = document.getElementById('api-key-input').value.trim();
-            const proxyUrl = document.getElementById('proxy-url-input').value.trim();
-            
-            if (!apiKey && !proxyUrl) {
-                showNotification('请输入 API Key 或代理地址', 'warning');
-                return;
-            }
-            
-            state.apiKey = apiKey;
-            state.proxyUrl = proxyUrl;
-            
-            localStorage.setItem('openai_api_key', apiKey);
-            localStorage.setItem('openai_proxy_url', proxyUrl);
-            
-            state.isConnected = true;
-            updateConnectionStatus(true);
-            showNotification('设置已保存', 'success');
-        }
+            // 配置滑块
+            document.getElementById('temperature').addEventListener('input', (e) => {
+                document.getElementById('tempValue').textContent = e.target.value;
+            });
 
-        // API Key 可见性切换
-        function toggleApiKeyVisibility() {
-            const input = document.getElementById('api-key-input');
-            const btn = event.target;
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                btn.textContent = '🙈';
-            } else {
-                input.type = 'password';
-                btn.textContent = '👁️';
-            }
+            document.getElementById('topP').addEventListener('input', (e) => {
+                document.getElementById('topPValue').textContent = e.target.value;
+            });
         }
 
         // 标签页切换
         function switchTab(tabName) {
-            // 更新标签状态
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
+            // 隐藏所有面板
+            document.querySelectorAll('.workspace-pane').forEach(pane => {
+                pane.style.display = 'none';
             });
-            event.target.classList.add('active');
-            
-            // 更新内容显示
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
+
+            // 显示选中的面板
+            document.getElementById(tabName + 'Pane').style.display = 'flex';
+
+            // 更新导航状态
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
             });
-            document.getElementById(`${tabName}-tab`).classList.add('active');
-            
+            event.target.closest('.nav-item').classList.add('active');
+
             state.currentTab = tabName;
         }
 
-        // 模板应用
-        function applyTemplate() {
-            const templateSelect = document.getElementById('template-select');
-            const promptTextarea = document.getElementById('prompt-textarea');
+        // 发送消息
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
             
-            if (templateSelect.value) {
-                const template = templates[templateSelect.value];
-                promptTextarea.value = template;
-                showNotification('模板已应用', 'success');
+            if (!message) return;
+            if (!state.config.apiKey) {
+                alert('请先配置API密钥');
+                switchTab('config');
+                return;
+            }
+
+            // 添加用户消息
+            addMessage('user', message);
+            input.value = '';
+            input.style.height = 'auto';
+
+            // 显示加载状态
+            const sendBtn = document.getElementById('sendBtn');
+            const originalText = sendBtn.innerHTML;
+            sendBtn.innerHTML = '<span class="loading"></span> 发送中...';
+            sendBtn.disabled = true;
+
+            try {
+                const response = await callOpenAI(message);
+                addMessage('assistant', response);
+                updateStats(true, response.length);
+            } catch (error) {
+                addMessage('assistant', `错误: ${error.message}`);
+                updateStats(false);
+            } finally {
+                sendBtn.innerHTML = originalText;
+                sendBtn.disabled = false;
             }
         }
 
-        // 发送请求
-        async function sendRequest() {
-            if (!state.isConnected) {
-                showNotification('请先配置 API Key 或代理地址', 'error');
-                return;
-            }
-            
-            if (state.isProcessing) {
-                showNotification('正在处理中，请稍候...', 'warning');
-                return;
-            }
-            
-            const prompt = document.getElementById('prompt-textarea').value.trim();
-            if (!prompt) {
-                showNotification('请输入提示词', 'warning');
-                return;
-            }
-            
-            state.isProcessing = true;
-            const sendBtn = document.getElementById('send-btn');
-            sendBtn.disabled = true;
-            sendBtn.innerHTML = '<span class="loading-spinner"></span> 处理中...';
-            
-            const responseContainer = document.getElementById('response-container');
-            responseContainer.classList.add('loading');
-            responseContainer.innerHTML = '<div class="loading-spinner"></div> 正在请求中...';
-            
+        // 调用OpenAI API
+        async function callOpenAI(message) {
             const startTime = Date.now();
             
-            try {
-                const payload = buildRequestPayload(prompt);
-                const response = await makeAPIRequest(payload);
-                const endTime = Date.now();
-                
-                displayResponse(response);
-                addToHistory(prompt, response, endTime - startTime);
-                updateStats(response, endTime - startTime);
-                showNotification('请求成功', 'success');
-                
-            } catch (error) {
-                displayError(error.message);
-                showNotification('请求失败: ' + error.message, 'error');
-            } finally {
-                state.isProcessing = false;
-                sendBtn.disabled = false;
-                sendBtn.innerHTML = '<span>🚀</span> 发送请求';
-                responseContainer.classList.remove('loading');
-            }
-        }
-
-        // 构建请求载荷
-        function buildRequestPayload(prompt) {
-            return {
-                model: document.getElementById('model-select').value,
-                messages: [{ role: 'user', content: prompt }],
-                temperature: parseFloat(document.getElementById('temperature').value),
-                max_tokens: parseInt(document.getElementById('max-tokens').value),
-                top_p: parseFloat(document.getElementById('top-p').value),
-                frequency_penalty: parseFloat(document.getElementById('frequency-penalty').value),
-                presence_penalty: parseFloat(document.getElementById('presence-penalty').value)
+            const requestBody = {
+                model: state.config.model,
+                messages: [
+                    { role: 'user', content: message }
+                ],
+                temperature: parseFloat(state.config.temperature),
+                max_tokens: parseInt(state.config.maxTokens),
+                top_p: parseFloat(state.config.topP)
             };
-        }
 
-        // 发送 API 请求
-        async function makeAPIRequest(payload) {
-            const url = state.proxyUrl || 'https://api.openai.com/v1/chat/completions';
             const headers = {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${state.config.apiKey}`
             };
-            
-            if (!state.proxyUrl) {
-                headers['Authorization'] = `Bearer ${state.apiKey}`;
+
+            if (state.config.orgId) {
+                headers['OpenAI-Organization'] = state.config.orgId;
             }
-            
-            const timeout = parseInt(document.getElementById('timeout').value) * 1000;
-            const retryCount = parseInt(document.getElementById('retry-count').value);
-            
-            for (let attempt = 0; attempt <= retryCount; attempt++) {
-                try {
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), timeout);
-                    
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: headers,
-                        body: JSON.stringify(payload),
-                        signal: controller.signal
-                    });
-                    
-                    clearTimeout(timeoutId);
-                    
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.error?.message || `HTTP ${response.status}`);
-                    }
-                    
-                    return await response.json();
-                    
-                } catch (error) {
-                    if (attempt === retryCount) {
-                        throw error;
-                    }
-                    
-                    if (error.name === 'AbortError') {
-                        throw new Error('请求超时');
-                    }
-                    
-                    // 等待后重试
-                    await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
-                }
-            }
-        }
 
-        // 显示响应
-        function displayResponse(response) {
-            const responseContainer = document.getElementById('response-container');
-            const content = response.choices?.[0]?.message?.content || JSON.stringify(response, null, 2);
-            
-            responseContainer.innerHTML = `<pre>${escapeHtml(content)}</pre>`;
-            updateVisualization(response);
-        }
-
-        // 显示错误
-        function displayError(error) {
-            const responseContainer = document.getElementById('response-container');
-            responseContainer.innerHTML = `<div style="color: var(--danger);">❌ ${escapeHtml(error)}</div>`;
-        }
-
-        // 复制响应
-        function copyResponse() {
-            const responseContainer = document.getElementById('response-container');
-            const text = responseContainer.textContent;
-            
-            navigator.clipboard.writeText(text).then(() => {
-                const copyBtn = document.getElementById('copy-btn');
-                copyBtn.classList.add('copied');
-                copyBtn.textContent = '✅ 已复制';
-                
-                setTimeout(() => {
-                    copyBtn.classList.remove('copied');
-                    copyBtn.textContent = '📋 复制';
-                }, 2000);
-                
-                showNotification('已复制到剪贴板', 'success');
+            const response = await fetch(`${state.config.baseUrl}/chat/completions`, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(requestBody)
             });
-        }
 
-        // 历史记录管理
-        function loadHistory() {
-            const saved = localStorage.getItem('openai_history');
-            if (saved) {
-                state.history = JSON.parse(saved);
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error?.message || '请求失败');
             }
+
+            const data = await response.json();
+            const responseTime = Date.now() - startTime;
+            
+            state.stats.totalResponseTime += responseTime;
+            return data.choices[0].message.content;
         }
 
-        function saveHistory() {
-            localStorage.setItem('openai_history', JSON.stringify(state.history));
+        // 添加消息到对话
+        function addMessage(role, content) {
+            const messagesContainer = document.getElementById('messagesContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${role === 'user' ? '👤' : 'AI'}</div>
+                <div class="message-content">
+                    <div class="message-bubble">
+                        <div class="message-text">${escapeHtml(content)}</div>
+                        <div class="message-actions">
+                            <button class="message-action" onclick="copyMessage(this)">复制</button>
+                            <button class="message-action" onclick="regenerateMessage(this)">重新生成</button>
+                        </div>
+                    </div>
+                    <div class="message-time">${timestamp}</div>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // 保存对话
+            saveConversation();
         }
 
-        function addToHistory(prompt, response, responseTime) {
-            const entry = {
+        // 保存对话
+        function saveConversation() {
+            const messages = Array.from(document.querySelectorAll('.message')).map(msg => ({
+                role: msg.classList.contains('user') ? 'user' : 'assistant',
+                content: msg.querySelector('.message-text').textContent,
+                time: msg.querySelector('.message-time').textContent
+            }));
+
+            state.conversations.push({
                 id: Date.now(),
-                timestamp: new Date().toISOString(),
-                prompt: prompt,
-                response: response.choices?.[0]?.message?.content || JSON.stringify(response),
-                model: response.model,
-                usage: response.usage,
-                responseTime: responseTime
-            };
-            
-            state.history.unshift(entry);
-            if (state.history.length > 100) {
-                state.history = state.history.slice(0, 100);
-            }
-            
-            saveHistory();
-            renderHistory();
+                title: messages[0]?.content.substring(0, 50) + '...' || '新对话',
+                messages: messages,
+                timestamp: new Date().toISOString()
+            });
+
+            localStorage.setItem('conversations', JSON.stringify(state.conversations));
         }
 
+        // 加载对话历史
+        function loadConversations() {
+            const saved = localStorage.getItem('conversations');
+            if (saved) {
+                state.conversations = JSON.parse(saved);
+                renderHistory();
+            }
+        }
+
+        // 渲染历史记录
         function renderHistory() {
-            const container = document.getElementById('history-container');
-            container.innerHTML = '';
-            
-            state.history.forEach(entry => {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+
+            state.conversations.forEach(conv => {
                 const item = document.createElement('div');
                 item.className = 'history-item';
                 item.innerHTML = `
-                    <div class="history-actions">
-                        <button class="history-action-btn" onclick="loadHistoryItem(${entry.id})">📝</button>
-                        <button class="history-action-btn" onclick="deleteHistoryItem(${entry.id})">🗑️</button>
-                    </div>
-                    <div class="history-header">
-                        <span>${new Date(entry.timestamp).toLocaleString()}</span>
-                        <span>${entry.model}</span>
-                        <span>${entry.responseTime}ms</span>
-                    </div>
-                    <div class="history-request">${escapeHtml(entry.prompt)}</div>
-                    <div class="history-response">${escapeHtml(truncateText(entry.response, 200))}</div>
+                    <div class="history-item-title">${conv.title}</div>
+                    <div class="history-item-meta">${new Date(conv.timestamp).toLocaleString()}</div>
                 `;
-                
-                item.addEventListener('click', (e) => {
-                    if (!e.target.classList.contains('history-action-btn')) {
-                        loadHistoryItem(entry.id);
-                    }
-                });
-                
-                container.appendChild(item);
+                item.onclick = () => loadConversation(conv.id);
+                historyList.appendChild(item);
             });
         }
 
-        function loadHistoryItem(id) {
-            const entry = state.history.find(h => h.id === id);
-            if (entry) {
-                document.getElementById('prompt-textarea').value = entry.prompt;
-                displayResponse(entry);
+        // 加载特定对话
+        function loadConversation(id) {
+            const conv = state.conversations.find(c => c.id === id);
+            if (!conv) return;
+
+            const messagesContainer = document.getElementById('messagesContainer');
+            messagesContainer.innerHTML = '';
+
+            conv.messages.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${msg.role}`;
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">${msg.role === 'user' ? '👤' : 'AI'}</div>
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            <div class="message-text">${escapeHtml(msg.content)}</div>
+                        </div>
+                        <div class="message-time">${msg.time}</div>
+                    </div>
+                `;
+                messagesContainer.appendChild(messageDiv);
+            });
+
+            switchTab('history');
+        }
+
+        // 配置管理
+        function saveConfig() {
+            state.config.apiKey = document.getElementById('apiKey').value;
+            state.config.baseUrl = document.getElementById('baseUrl').value;
+            state.config.orgId = document.getElementById('orgId').value;
+            state.config.model = document.getElementById('model').value;
+            state.config.temperature = document.getElementById('temperature').value;
+            state.config.maxTokens = document.getElementById('maxTokens').value;
+            state.config.topP = document.getElementById('topP').value;
+            state.config.proxy = document.getElementById('proxy').value;
+            state.config.timeout = document.getElementById('timeout').value;
+            state.config.retries = document.getElementById('retries').value;
+
+            localStorage.setItem('config', JSON.stringify(state.config));
+            alert('配置已保存');
+        }
+
+        function loadConfig() {
+            const saved = localStorage.getItem('config');
+            if (saved) {
+                state.config = { ...state.config, ...JSON.parse(saved) };
                 
-                // 高亮选中项
-                document.querySelectorAll('.history-item').forEach(item => {
-                    item.classList.remove('selected');
-                });
-                event.currentTarget.classList.add('selected');
+                document.getElementById('apiKey').value = state.config.apiKey;
+                document.getElementById('baseUrl').value = state.config.baseUrl;
+                document.getElementById('orgId').value = state.config.orgId;
+                document.getElementById('model').value = state.config.model;
+                document.getElementById('temperature').value = state.config.temperature;
+                document.getElementById('maxTokens').value = state.config.maxTokens;
+                document.getElementById('topP').value = state.config.topP;
+                document.getElementById('proxy').value = state.config.proxy;
+                document.getElementById('timeout').value = state.config.timeout;
+                document.getElementById('retries').value = state.config.retries;
                 
-                showNotification('已加载历史记录', 'success');
+                document.getElementById('tempValue').textContent = state.config.temperature;
+                document.getElementById('topPValue').textContent = state.config.topP;
             }
         }
 
-        function deleteHistoryItem(id) {
-            if (confirm('确定要删除这条记录吗？')) {
-                state.history = state.history.filter(h => h.id !== id);
-                saveHistory();
-                renderHistory();
-                showNotification('已删除记录', 'success');
-            }
-        }
-
-        function exportHistory() {
-            const dataStr = JSON.stringify(state.history, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(dataBlob);
-            
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `openai-history-${new Date().toISOString().split('T')[0]}.json`;
-            link.click();
-            
-            URL.revokeObjectURL(url);
-            showNotification('历史记录已导出', 'success');
-        }
-
-        function clearHistory() {
-            if (confirm('确定要清空所有历史记录吗？此操作不可撤销。')) {
-                state.history = [];
-                saveHistory();
-                renderHistory();
-                showNotification('历史记录已清空', 'success');
-            }
-        }
-
-        // 队列管理
-        function addToQueue() {
-            const prompt = document.getElementById('prompt-textarea').value.trim();
-            if (!prompt) {
-                showNotification('提示词为空，无法添加到队列', 'warning');
+        // 测试连接
+        async function testConnection() {
+            if (!state.config.apiKey && false) {
+                alert('请先输入API密钥');
                 return;
             }
-            
-            const queueItem = {
-                id: Date.now(),
-                prompt: prompt,
-                model: document.getElementById('model-select').value,
-                temperature: parseFloat(document.getElementById('temperature').value),
-                maxTokens: parseInt(document.getElementById('max-tokens').value)
-            };
-            
-            state.queue.push(queueItem);
-            updateQueueInfo();
-            showNotification('已添加到队列', 'success');
+
+            try {
+                const response = await callOpenAI('Hello, this is a test message.');
+                alert('连接成功！响应：' + response.substring(0, 100) + '...');
+            } catch (error) {
+                alert('连接失败：' + error.message);
+            }
         }
 
-        async function processQueue() {
-            if (state.queue.length === 0) {
-                showNotification('队列为空', 'warning');
+        // 批量处理
+        async function processBatch() {
+            const input = document.getElementById('batchInput').value.trim();
+            if (!input) {
+                alert('请输入要处理的请求');
                 return;
             }
+
+            const requests = input.split('\n').filter(line => line.trim());
+            const output = document.getElementById('batchOutput');
             
-            if (!confirm(`开始处理队列中的 ${state.queue.length} 个任务？`)) {
-                return;
-            }
+            output.value = '开始处理...\n';
             
-            state.isProcessing = true;
-            const originalBtn = document.getElementById('process-queue-btn').innerHTML;
-            document.getElementById('process-queue-btn').innerHTML = '<span class="loading-spinner"></span> 处理中...';
-            document.getElementById('process-queue-btn').disabled = true;
-            
-            while (state.queue.length > 0) {
-                const item = state.queue.shift();
-                updateQueueInfo();
-                
+            for (let i = 0; i < requests.length; i++) {
                 try {
-                    // 设置参数
-                    document.getElementById('prompt-textarea').value = item.prompt;
-                    document.getElementById('model-select').value = item.model;
-                    document.getElementById('temperature').value = item.temperature;
-                    document.getElementById('max-tokens').value = item.maxTokens;
-                    
-                    // 发送请求
-                    await sendRequest();
-                    
-                    // 防止频率限制
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    
+                    output.value += `\n处理第 ${i + 1}/${requests.length} 个请求...\n`;
+                    const response = await callOpenAI(requests[i]);
+                    output.value += `请求: ${requests[i]}\n`;
+                    output.value += `响应: ${response}\n`;
+                    output.value += `${'='.repeat(50)}\n`;
                 } catch (error) {
-                    console.error('队列处理错误:', error);
+                    output.value += `错误: ${error.message}\n`;
                 }
             }
             
-            state.isProcessing = false;
-            document.getElementById('process-queue-btn').innerHTML = originalBtn;
-            document.getElementById('process-queue-btn').disabled = false;
-            showNotification('队列处理完成', 'success');
-        }
-
-        function clearQueue() {
-            if (confirm('确定要清空队列吗？')) {
-                state.queue = [];
-                updateQueueInfo();
-                showNotification('队列已清空', 'success');
-            }
-        }
-
-        function updateQueueInfo() {
-            const queueInfo = document.getElementById('queue-info');
-            const queueCount = document.getElementById('queue-count');
-            
-            if (state.queue.length > 0) {
-                queueInfo.style.display = 'block';
-                queueCount.textContent = state.queue.length;
-            } else {
-                queueInfo.style.display = 'none';
-            }
+            output.value += '\n处理完成！';
         }
 
         // 统计更新
-        function updateStats(response, responseTime) {
-            state.requestCount++;
-            
-            if (response.usage) {
-                state.totalTokens += response.usage.total_tokens;
+        function updateStats(success = true, tokenCount = 0) {
+            state.stats.totalRequests++;
+            if (success) {
+                state.stats.successRequests++;
             }
-            
-            document.getElementById('request-stats').textContent = `${state.requestCount} 次`;
-            document.getElementById('token-usage').textContent = state.totalTokens.toLocaleString();
-            document.getElementById('response-time').textContent = `${responseTime}ms`;
+            state.stats.totalTokens += tokenCount;
+
+            document.getElementById('totalRequests').textContent = state.stats.totalRequests;
+            document.getElementById('totalTokens').textContent = state.stats.totalTokens;
+            document.getElementById('avgResponseTime').textContent = 
+                Math.round(state.stats.totalResponseTime / state.stats.totalRequests) + 'ms';
+            document.getElementById('successRate').textContent = 
+                Math.round((state.stats.successRequests / state.stats.totalRequests) * 100) + '%';
         }
 
-        // 可视化
-        function updateVisualization(response) {
-            const visualization = document.getElementById('visualization');
-            const usage = response.usage;
-            
-            if (usage) {
-                const total = usage.total_tokens;
-                const prompt = usage.prompt_tokens;
-                const completion = usage.completion_tokens;
-                
-                const promptPercent = (prompt / total) * 100;
-                const completionPercent = (completion / total) * 100;
-                
-                visualization.innerHTML = `
-                    <div class="visualization-bar" style="height: ${promptPercent}%;" title="Prompt: ${prompt}">
-                        <span class="visualization-label">Prompt</span>
-                    </div>
-                    <div class="visualization-bar" style="height: ${completionPercent}%;" title="Completion: ${completion}">
-                        <span class="visualization-label">Completion</span>
-                    </div>
+        // 模板管理
+        function renderTemplates() {
+            renderTemplateList('coding');
+        }
+
+        function renderTemplateList(category) {
+            const container = document.getElementById('templatesList');
+            container.innerHTML = '';
+
+            state.templates[category].forEach((template, index) => {
+                const templateDiv = document.createElement('div');
+                templateDiv.className = 'config-section';
+                templateDiv.innerHTML = `
+                    <h4>${template.name}</h4>
+                    <div class="form-textarea" style="min-height: 100px; padding: 10px; background: var(--bg-secondary); border-radius: 6px; margin-bottom: 10px;">${template.prompt}</div>
+                    <button class="btn btn-secondary" onclick="useTemplate('${category}', ${index})">使用模板</button>
                 `;
-            }
+                container.appendChild(templateDiv);
+            });
         }
 
-        // 状态更新
-        function updateConnectionStatus(connected) {
-            const statusDot = document.getElementById('status-dot');
-            const statusText = document.getElementById('status-text');
-            const connectionStatus = document.getElementById('connection-status');
-            
-            if (connected) {
-                statusDot.classList.add('connected');
-                statusText.textContent = '已连接';
-                connectionStatus.textContent = '已连接';
-            } else {
-                statusDot.classList.remove('connected');
-                statusText.textContent = '未连接';
-                connectionStatus.textContent = '未连接';
-            }
-        }
-
-        function updateStatus() {
-            updateConnectionStatus(state.isConnected);
-        }
-
-        // 通知系统
-        function showNotification(message, type = 'info') {
-            const container = document.getElementById('notification-container');
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.innerHTML = `
-                <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️'}</span>
-                <span>${message}</span>
-            `;
-            
-            container.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.classList.add('show');
-            }, 100);
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => {
-                    container.removeChild(notification);
-                }, 300);
-            }, 3000);
-        }
-
-        // 模态框
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('show');
+        function useTemplate(category, index) {
+            const template = state.templates[category][index];
+            document.getElementById('messageInput').value = template.prompt;
+            switchTab('chat');
         }
 
         // 工具函数
@@ -1617,9 +1448,84 @@
             return div.innerHTML;
         }
 
-        function truncateText(text, maxLength) {
-            if (text.length <= maxLength) return text;
-            return text.substring(0, maxLength) + '...';
+        function copyMessage(btn) {
+            const text = btn.closest('.message-content').querySelector('.message-text').textContent;
+            navigator.clipboard.writeText(text);
+            btn.textContent = '已复制';
+            setTimeout(() => btn.textContent = '复制', 2000);
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+
+        function toggleTheme() {
+            document.body.toggleAttribute('data-theme');
+            localStorage.setItem('theme', document.body.getAttribute('data-theme') || 'light');
+        }
+
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function showSettings() {
+            showModal('settingsModal');
+        }
+
+        function exportData() {
+            const data = {
+                conversations: state.conversations,
+                config: { ...state.config, apiKey: '***' },
+                stats: state.stats,
+                templates: state.templates
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `openai-studio-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (data.conversations) state.conversations = data.conversations;
+                        if (data.config) state.config = { ...state.config, ...data.config };
+                        if (data.stats) state.stats = data.stats;
+                        if (data.templates) state.templates = data.templates;
+                        
+                        loadConfig();
+                        loadConversations();
+                        updateStats();
+                        renderTemplates();
+                        alert('导入成功');
+                    } catch (error) {
+                        alert('导入失败：' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        // 加载主题
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
         }
     </script>
 </body>

@@ -1,0 +1,17 @@
+{
+  "name": "chathub-workers",
+  "version": "1.0.0",
+  "description": "ChatHub Workers Backend",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail"
+  },
+  "keywords": ["websocket", "chat", "cloudflare", "workers"],
+  "author": "ChatHub Team",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^4.47.0"
+  }
+}

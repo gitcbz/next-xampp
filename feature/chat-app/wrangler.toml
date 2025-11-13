@@ -1,0 +1,10 @@
+name = "chathub"
+main = "workers/src/index.js"
+compatibility_date = "2023-12-01"
+
+# 环境配置
+[env.production]
+name = "chathub-prod"
+
+[env.staging]
+name = "chathub-staging"

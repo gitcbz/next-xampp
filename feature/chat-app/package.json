@@ -1,0 +1,13 @@
+{
+  "name": "chathub",
+  "version": "1.0.0",
+  "description": "ChatHub Cloudflare Chat App",
+  "scripts": {
+    "deploy:workers": "cd workers && wrangler deploy",
+    "deploy:pages": "cd pages && wrangler pages deploy . --project-name chathub-frontend",
+    "deploy": "npm run deploy:workers && npm run deploy:pages"
+  },
+  "devDependencies": {
+    "wrangler": "^4.47.0"
+  }
+}

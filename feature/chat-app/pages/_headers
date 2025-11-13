@@ -1,0 +1,20 @@
+# API路由的CORS配置
+/api/* 200
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With
+Access-Control-Max-Age: 86400
+
+# WebSocket路由
+/ws/* 200
+Access-Control-Allow-Origin: *
+
+# 安全头
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+X-XSS-Protection: "1; mode=block"
+Referrer-Policy: strict-origin-when-cross-origin
+
+# 缓存配置
+/static/*  Cache-Control: public, max-age=31536000, immutable
+/*            Cache-Control: public, max-age=3600

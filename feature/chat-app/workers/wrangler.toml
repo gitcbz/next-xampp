@@ -1,0 +1,19 @@
+name = "chathub-workers"
+main = "src/index.js"
+compatibility_date = "2023-12-01"
+
+[vars]
+APP_NAME = "ChatHub"
+VERSION = "1.0.0"
+CORS_ORIGIN = "*"
+
+# 环境变量配置
+[env.production]
+name = "chathub-prod"
+[env.production.vars]
+CORS_ORIGIN = "https://chathub-frontend.pages.dev"
+
+[env.staging]
+name = "chathub-staging"
+[env.staging.vars]
+CORS_ORIGIN = "*"
