@@ -2,13 +2,50 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CBZ Studio · Code the world.</title>
+    <!-- viewport: 允许合理缩放以改善可访问性，避免完全禁止缩放 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="email=no">
+    <title>CBZ Studio - Code the world.</title>
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/index.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- 强制设置基础字体 -->
+    <style>
+        /* 强制防止缩放 */
+        html {
+            font-size: 16px !important;
+            -webkit-text-size-adjust: 100% !important;
+            -ms-text-size-adjust: 100% !important;
+            -moz-text-size-adjust: 100% !important;
+            text-size-adjust: 100% !important;
+        }
+        
+        body {
+            font-size: 16px !important;
+            -webkit-text-size-adjust: 100% !important;
+            -ms-text-size-adjust: 100% !important;
+            -moz-text-size-adjust: 100% !important;
+            text-size-adjust: 100% !important;
+            zoom: 1 !important;
+            -webkit-transform: scale(1) !important;
+            transform: scale(1) !important;
+        }
+        
+        /* iOS Safari */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                -webkit-text-size-adjust: 100% !important;
+                -webkit-transform: scale(1) !important;
+                transform: scale(1) !important;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- 增强背景动画 -->
@@ -33,24 +70,79 @@
         <div class="loading-spinner"></div>
     </div>
 
+    <!-- 彩蛋模态框 -->
+    <div class="egg-modal" id="eggModal">
+        <div class="egg-content">
+            <button class="egg-close" onclick="closeEggModal()">✖</button>
+            <div class="egg-icon">🎉</div>
+            <h2 class="egg-title">恭喜你触发了彩蛋！</h2>
+            <p class="egg-subtitle">这是一个特别的惊喜，请欣赏下面的视频</p>
+            
+            <div class="egg-video-container">
+                <video id="eggVideo" class="egg-video" controls>
+                    <source src="files/egg.mp4" type="video/mp4">
+                    <source src="files/egg.webm" type="video/webm">
+                    您的浏览器不支持视频播放。
+                </video>
+            </div>
+            
+            <div class="egg-stats">
+                <p>彩蛋触发次数: <span id="eggCount">1</span></p>
+                <p>触发时间: <span id="triggerTime"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 顶部搜索栏 -->
+    <header class="top-header">
+        <div class="header-content">
+            <div class="search-container">
+                <div class="search-box">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        class="search-input" 
+                        placeholder="搜索..."
+                        autocomplete="off"
+                        inputmode="text"
+                        autocapitalize="off"
+                        autocorrect="off"
+                        spellcheck="false"
+                        style="font-size: 16px !important; -webkit-text-size-adjust: 100%;"
+                    >
+                    <button class="search-btn" id="searchBtn">
+                        <span>🔍</span>
+                    </button>
+                </div>
+                <div class="search-suggestions" id="searchSuggestions">
+                    <div class="suggestion-item">游戏中心</div>
+                    <div class="suggestion-item">本地云盘</div>
+                    <div class="suggestion-item">学习中心</div>
+                    <div class="suggestion-item">AI工具箱</div>
+                </div>
+            </div>
+            
+            <nav class="header-nav">
+                <a href="#" class="nav-link" onclick="showAbout()">关于我们</a>
+                <a href="#" class="nav-link" onclick="showContact()">联系方式</a>
+            </nav>
+        </div>
+    </header>
+
     <!-- 主容器 -->
     <div class="main-container">
         <!-- Logo区域 -->
         <div class="logo-container">
-            <div class="main-logo" id="mainLogo" title="点击触发彩蛋" role="img" aria-label="CBZ Studio Logo" tabindex="0">
+            <div class="main-logo" id="mainLogo" title="CBZ Studio">
+                CBZ
+            </div>
         </div>
-    </div>
         
         <h1 class="main-title">CBZ Studio</h1>
         <p class="subtitle">
             创新科技，引领未来<br>
             我们致力于打造卓越的数字体验，让技术改变生活
         </p>
-        <!-- 站点搜索（可触发彩蛋） -->
-        <form id="siteSearchForm" class="site-search" role="search" aria-label="站点搜索">
-            <input id="siteSearch" type="search" class="search-input" placeholder="搜索或输入彩蛋代码" aria-label="搜索或输入彩蛋代码">
-            <button type="submit" class="search-button">搜索</button>
-        </form>
         
         <!-- 功能卡片 -->
         <div class="features-container">
@@ -101,7 +193,10 @@
         <div class="footer-content">
             <p>©2025 CBZ Studio 版权所有</p>
             <div class="social-links">
-                <a href="mailto:gitcbz@outlook.com" class="social-link" title="邮箱">📧</a>
+                <a href="mailto:support@cbzstudio.com" class="social-link" title="邮箱">📧</a>
+                <a href="#" class="social-link" title="微信" onclick="Utils.showToast('微信功能开发中...', 'info'); return false;">💬</a>
+                <a href="#" class="social-link" title="Twitter" onclick="Utils.showToast('Twitter功能开发中...', 'info'); return false;">🐦</a>
+                <a href="#" class="social-link" title="Instagram" onclick="Utils.showToast('Instagram功能开发中...', 'info'); return false;">📷</a>
             </div>
         </div>
     </footer>
@@ -112,16 +207,33 @@
     <script src="js/common.js"></script>
     <script src="js/index.js"></script>
     
-    <!-- logo 的键盘触发已移除；彩蛋通过搜索框输入触发 -->
-
     <script>
-        // Logo图片加载处理
+        // 强制防止缩放的JavaScript
         document.addEventListener('DOMContentLoaded', function() {
+            // 强制设置字体大小
+            document.documentElement.style.fontSize = '16px';
+            document.body.style.fontSize = '16px';
+            
+            // 防止双击缩放
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', function (event) {
+                const now = (new Date()).getTime();
+                if (now - lastTouchEnd <= 300) {
+                    event.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, false);
+            
+            // 保留双击防缩放，但不要阻止多指/gesture 缩放（允许用户缩放以提高可访问性）
+            // 如果需要可以再做更细粒度处理；目前移除对多指和 gesture 的 preventDefault
+            
+            // Logo图片加载处理
             const logo = document.getElementById('mainLogo');
             const img = new Image();
             
             img.onload = function() {
-                logo.style.backgroundImage = 'url(files/logo.PNG)';
+                // 使用绝对路径，确保在任何路由下都能正确加载
+                logo.style.backgroundImage = 'url(/files/logo.PNG)';
                 logo.textContent = '';
                 logo.classList.remove('error');
             };
@@ -129,10 +241,10 @@
             img.onerror = function() {
                 console.warn('Logo图片加载失败，使用文字Logo');
                 logo.classList.add('error');
-                // 可以在这里添加错误处理逻辑
             };
             
-            img.src = 'files/logo.PNG';
+            // 使用绝对路径以避免相对路径带来的不同页面定位问题
+            img.src = '/files/logo.PNG';
             
             // 设置超时处理
             setTimeout(() => {
@@ -141,6 +253,20 @@
                     logo.classList.add('error');
                 }
             }, 3000);
+        });
+        
+        // 移除强制缩放/缩放复位逻辑（会造成布局问题），改用更温和的防缩放处理。
+        // 防止键盘弹出时页面异常滚动，微调为在输入聚焦时保持视口平稳（不强制缩放）
+        window.addEventListener('focusin', function(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                // 确保输入框可见，但不做强制缩放或 zoom 操作
+                setTimeout(function() {
+                    // 仅在需要时微调滚动，避免跳动
+                    if (window.innerHeight < 600) {
+                        window.scrollTo(0, 0);
+                    }
+                }, 250);
+            }
         });
     </script>
 </body>
