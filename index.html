@@ -70,7 +70,7 @@
                         type="text" 
                         id="searchInput" 
                         class="search-input" 
-                        placeholder="搜索功能、输入日期触发彩蛋..."
+                        placeholder="搜索..."
                         autocomplete="off"
                     >
                     <button class="search-btn" id="searchBtn">
@@ -203,8 +203,8 @@
                 if (window.Navigation && typeof window.Navigation.goToTalk === 'function') {
                     return window.Navigation.goToTalk();
                 }
-                // 最后退回到直接跳转，使用根路径以避免相对路径问题
-                window.location.href = '/talk/index.html';
+                // 最后退回到直接跳转，使用相对路径以兼容本地文件协议
+                window.location.href = 'talk/index.html';
             }
 
             function fallbackChat() {
@@ -219,7 +219,7 @@
                     window.open('https://chat-pro.cbzstudio.qzz.io', '_blank');
                 } catch (e) {
                     // 作为最后手段，导航到一个提示页面或显示错误
-                    window.location.href = '/talk/index.html';
+                    window.location.href = 'talk/index.html';
                 }
             }
 

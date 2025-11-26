@@ -52,8 +52,8 @@ const Navigation = {
     
     // 跳转到帖子系统
     goToTalk() {
-        // 使用根路径，避免相对路径引起的错误
-        this.safeNavigate('/talk/index.html', '帖子系统');
+        // 使用相对路径，兼容文件协议和部署环境
+        this.safeNavigate('talk/index.html', '帖子系统');
     },
 
     // 跳转到聊天室（外部链接，打开新窗口）

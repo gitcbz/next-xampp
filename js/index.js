@@ -339,23 +339,6 @@ performSearch(query) {
     }
 }
 
-// 更新全局函数
-window.navigateToTalk = function() {
-    if (window.indexPage) {
-        window.indexPage.navigateToTalk();
-    } else {
-        window.location.href = 'talk/index.html';
-    }
-};
-
-window.navigateToChat = function() {
-    if (window.indexPage) {
-        window.indexPage.navigateToChat();
-    } else {
-        window.open('https://chat-pro.cbzstudio.qzz.io', '_blank');
-    }
-};
-
 
     // 修复：导航到游戏中心
     navigateToGame() {
@@ -1222,6 +1205,15 @@ window.navigateToGame = function() {
     }
 };
 
+// 自动在页面加载后实例化 IndexPage，确保全局方法可用
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        if (!window.indexPage) window.indexPage = new IndexPage();
+    } catch (e) {
+        console.error('IndexPage 初始化失败:', e);
+    }
+});
+
 window.navigateToCloud = function() {
     if (window.indexPage) {
         window.indexPage.navigateToCloud();
@@ -1300,6 +1292,8 @@ function showContact() {
         window.navigateToCloud = () => window.indexPage.navigateToCloud();
         window.navigateToLearn = () => window.indexPage.navigateToLearn();
         window.navigateToAI = () => window.indexPage.navigateToAI();
+    window.navigateToTalk = () => window.indexPage.navigateToTalk();
+    window.navigateToChat = () => window.indexPage.navigateToChat();
         window.closeEggModal = () => window.indexPage.closeEggModal();
     }
 })();
