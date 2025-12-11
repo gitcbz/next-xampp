@@ -84,6 +84,8 @@
                     <div class="suggestion-item">AI工具箱</div>
                     <div class="suggestion-item">帖子</div>
                     <div class="suggestion-item">聊天室</div>
+                    <div class="suggestion-item">邮件</div>
+                    <div class="suggestion-item">SChat</div>
                 </div>
             </div>
             
@@ -170,6 +172,32 @@
                 </p>
                 <button class="feature-button" onclick="navigateToChat()">
                     进入聊天
+                    <span class="external-link-icon">🔗</span>
+                </button>
+            </div>
+
+            <!-- 邮箱卡片 -->
+            <div class="feature-card external" data-target="mail">
+                <div class="feature-icon">📧</div>
+                <h2 class="feature-title">邮箱</h2>
+                <p class="feature-description">
+                    访问我们的邮件服务，管理收发邮件、安全且可靠的企业邮箱访问入口。
+                </p>
+                <button class="feature-button" onclick="navigateToMail()">
+                    打开邮箱
+                    <span class="external-link-icon">🔗</span>
+                </button>
+            </div>
+
+            <!-- SChat 安全聊天卡片 -->
+            <div class="feature-card external" data-target="schat">
+                <div class="feature-icon">🛡️</div>
+                <h2 class="feature-title">SChat（安全聊天）</h2>
+                <p class="feature-description">
+                    SChat 提供强化隐私与安全的聊天服务，适合需要更高安全性的沟通场景。
+                </p>
+                <button class="feature-button" onclick="navigateToSChat()">
+                    进入 SChat
                     <span class="external-link-icon">🔗</span>
                 </button>
             </div>

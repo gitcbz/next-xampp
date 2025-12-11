@@ -246,6 +246,14 @@ navigateBasedOnTitle(title) {
         case '聊天室':
             this.navigateToChat();
             break;
+        case '邮件':
+            this.navigateToMail();
+            break;
+        case 'SChat':
+        case 'S Chat':
+        case 'S-Chat':
+            this.navigateToSChat();
+            break;
         default:
             console.log('未知标题:', title);
             if (typeof Utils !== 'undefined' && Utils.showToast) {
@@ -302,7 +310,12 @@ performSearch(query) {
         '帖子': 'talk',
         '帖子系统': 'talk',
         '聊天': 'chat',
-        '聊天室': 'chat'
+        '聊天室': 'chat',
+        '邮件': 'mail',
+        'mail': 'mail',
+        'schat': 'schat',
+        's chat': 'schat',
+        's-chat': 'schat'
     };
 
     const target = searchMap[query.toLowerCase()];
@@ -329,6 +342,12 @@ performSearch(query) {
                     break;
                 case 'chat':
                     this.navigateToChat();
+                    break;
+                case 'mail':
+                    this.navigateToMail();
+                    break;
+                case 'schat':
+                    this.navigateToSChat();
                     break;
             }
         }, 1000);
@@ -358,6 +377,54 @@ performSearch(query) {
     // 修复：导航到AI工具箱
     navigateToAI() {
         this.navigateWithLoading('ai/index.html', 'AI工具箱');
+    }
+
+    // 新增：导航到邮箱（外部站点）
+    navigateToMail() {
+        if (typeof Utils !== 'undefined' && Utils.showToast) {
+            Utils.showToast('正在打开邮箱...', 'info');
+        }
+
+        const transition = document.createElement('div');
+        transition.className = 'page-transition active';
+        document.body.appendChild(transition);
+
+        setTimeout(() => {
+            try {
+                window.open('https://mail.cbzstudio.qzz.io', '_blank');
+            } catch (error) {
+                console.error('打开邮箱失败:', error);
+                if (typeof Utils !== 'undefined' && Utils.showToast) {
+                    Utils.showToast('打开邮箱失败，请手动访问: mail.cbzstudio.qzz.io', 'error');
+                }
+            }
+
+            setTimeout(() => transition.remove(), 500);
+        }, 200);
+    }
+
+    // 新增：导航到 SChat（外部站点）
+    navigateToSChat() {
+        if (typeof Utils !== 'undefined' && Utils.showToast) {
+            Utils.showToast('正在打开 SChat...', 'info');
+        }
+
+        const transition = document.createElement('div');
+        transition.className = 'page-transition active';
+        document.body.appendChild(transition);
+
+        setTimeout(() => {
+            try {
+                window.open('https://chat2.cbzstudio.qzz.io', '_blank');
+            } catch (error) {
+                console.error('打开 SChat 失败:', error);
+                if (typeof Utils !== 'undefined' && Utils.showToast) {
+                    Utils.showToast('打开 SChat 失败，请手动访问: chat2.cbzstudio.qzz.io', 'error');
+                }
+            }
+
+            setTimeout(() => transition.remove(), 500);
+        }, 200);
     }
 
     // 修复：带加载效果的导航
@@ -509,7 +576,12 @@ performSearch(query) {
             '学习中心': 'learn',
             'ai': 'ai',
             '人工智能': 'ai',
-            'ai工具箱': 'ai'
+            'ai工具箱': 'ai',
+            '邮件': 'mail',
+            'mail': 'mail',
+            'schat': 'schat',
+            's chat': 'schat',
+            's-chat': 'schat'
         };
 
         const target = searchMap[query.toLowerCase()];
@@ -530,6 +602,15 @@ performSearch(query) {
                         break;
                     case 'ai':
                         this.navigateToAI();
+                        break;
+                    case 'chat':
+                        this.navigateToChat();
+                        break;
+                    case 'mail':
+                        this.navigateToMail();
+                        break;
+                    case 'schat':
+                        this.navigateToSChat();
                         break;
                 }
             }, 200);
@@ -1238,6 +1319,22 @@ window.navigateToAI = function() {
     }
 };
 
+window.navigateToMail = function() {
+    if (window.indexPage) {
+        window.indexPage.navigateToMail();
+    } else {
+        try { window.open('https://mail.cbzstudio.qzz.io', '_blank'); } catch(e) { window.location.href = 'https://mail.cbzstudio.qzz.io'; }
+    }
+};
+
+window.navigateToSChat = function() {
+    if (window.indexPage) {
+        window.indexPage.navigateToSChat();
+    } else {
+        try { window.open('https://chat2.cbzstudio.qzz.io', '_blank'); } catch(e) { window.location.href = 'https://chat2.cbzstudio.qzz.io'; }
+    }
+};
+
 // 全局彩蛋函数
 window.closeEggModal = function() {
     if (window.indexPage) {
@@ -1258,7 +1355,7 @@ function showContact() {
     if (window.indexPage) {
         window.indexPage.showContact();
     } else if (typeof Utils !== 'undefined' && Utils.showToast) {
-        Utils.showToast('联系我们：support@cbzstudio.com', 'info');
+        Utils.showToast('联系我们：support@cbzstudio.qzz.io', 'info');
     }
 }
 
@@ -1282,6 +1379,8 @@ function showContact() {
             window.navigateToCloud = () => window.indexPage.navigateToCloud();
             window.navigateToLearn = () => window.indexPage.navigateToLearn();
             window.navigateToAI = () => window.indexPage.navigateToAI();
+                window.navigateToMail = () => window.indexPage.navigateToMail();
+                window.navigateToSChat = () => window.indexPage.navigateToSChat();
             window.closeEggModal = () => window.indexPage.closeEggModal();
         });
     } else {
@@ -1294,6 +1393,8 @@ function showContact() {
         window.navigateToAI = () => window.indexPage.navigateToAI();
     window.navigateToTalk = () => window.indexPage.navigateToTalk();
     window.navigateToChat = () => window.indexPage.navigateToChat();
+    window.navigateToMail = () => window.indexPage.navigateToMail();
+    window.navigateToSChat = () => window.indexPage.navigateToSChat();
         window.closeEggModal = () => window.indexPage.closeEggModal();
     }
 })();

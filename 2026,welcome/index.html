@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏮 恭贺 2026 马年大吉 🐎</title>
+    <style>
+        /* 整体页面背景和字体设置 */
+        body {
+            font-family: 'STKaiti', 'KaiTi', sans-serif; 
+            background-color: #f7e6e6; 
+            color: #8b0000; 
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* 头部和主要标题样式 */
+        header {
+            background-color: #cc0000; 
+            color: #fff;
+            padding: 20px 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        h1 {
+            font-size: 3.5em; 
+            margin: 0;
+            letter-spacing: 5px;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        h2 {
+            font-size: 2em;
+            color: #ffd700; 
+            margin-top: 5px;
+        }
+
+        /* 主内容区域 */
+        .container {
+            width: 85%;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9); 
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(139, 0, 0, 0.5);
+        }
+
+        /* 马年主题图片区域 */
+        .image-gallery {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .image-gallery > div {
+            width: 30%;
+            margin: 10px;
+            padding: 10px;
+            border: 3px solid #ffd700; 
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(255, 140, 0, 0.5);
+        }
+
+        /* 专门用于包裹图片的容器，固定高度 */
+        .image-wrapper {
+            width: 100%;
+            height: 180px; /* 固定高度，您可根据需要调整 */
+            background-color: #f0f0f0; /* 留白时的背景色 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            overflow: hidden; /* 防止图片溢出 */
+        }
+        
+        /* ***** 核心修复：使用 img 标签并确保完整显示 ***** */
+        .image-wrapper img {
+            width: 100%; /* 让图片宽度填充父容器 */
+            height: 100%; /* 让图片高度填充父容器 */
+            
+            /* 关键属性：保持图片纵横比，并确保整个图片可见。
+               如果图片比例与容器不符，会在边缘留白（用 .image-wrapper 的背景色填充）*/
+            object-fit: contain; 
+        }
+
+        /* 传统文化描述区域 */
+        .tradition-section {
+            text-align: left;
+            padding: 20px;
+            border-top: 2px dashed #cc0000;
+            margin-top: 40px;
+        }
+
+        .tradition-section h3 {
+            color: #cc0000;
+            font-size: 1.8em;
+            border-bottom: 2px solid #ffd700;
+            padding-bottom: 5px;
+        }
+
+        .tradition-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tradition-section li {
+            margin-bottom: 10px;
+            padding-left: 1.5em;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .tradition-section li::before {
+            content: '♦'; 
+            color: #ffd700;
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+            position: absolute;
+            left: 0;
+        }
+        
+        /* 底部 */
+        footer {
+            margin-top: 40px;
+            padding: 15px 0;
+            background-color: #cc0000;
+            color: #fff;
+            font-size: 0.9em;
+        }
+
+        /* 动画效果：灯笼 */
+        .lantern {
+            position: absolute;
+            top: 10px;
+            font-size: 2.5em;
+            animation: swing 3s ease-in-out infinite alternate; 
+        }
+
+        .lantern.left { left: 5%; }
+        .lantern.right { right: 5%; }
+
+        @keyframes swing {
+            from { transform: rotate(-5deg); }
+            to { transform: rotate(5deg); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="lantern left">🏮</div>
+        <div class="lantern right">🏮</div>
+        
+        <h1>🎆 恭贺新春，马到成功 🎆</h1>
+        <h2>—— 喜迎 2026 农历马年 ——</h2>
+    </header>
+
+    <div class="container">
+        
+        <div class="image-gallery">
+            <div>
+                <div class="image-wrapper">
+                    <img src="../files/2026W1.png" alt="马年吉祥logo">
+                </div>
+                <p>2026 马年Logo</p>
+            </div>
+            <div>
+                <div class="image-wrapper">
+                    <img src="../files/2026W2.png" alt="新春对联鞭炮">
+                </div>
+                <p>新春对联高挂</p>
+            </div>
+            <div>
+                <div class="image-wrapper">
+                    <img src="../files/2026W3.png" alt="阖家团圆">
+                </div>
+                <p>阖家团圆，福到</p>
+            </div>
+            <div>
+                <div class="image-wrapper">
+                    <img src="../files/2026W3.png" alt="阖家团圆福字">
+                </div>
+                <p>烟花灿烂，新年已来</p>
+            </div>
+        </div>
+
+        <p style="font-size: 1.5em; color: #cc0000; font-weight: bold; margin: 30px 0;">
+            金马奔腾，瑞气盈门！祝您在新的一年里，龙马精神，万事如意！
+        </p>
+
+        <div class="tradition-section">
+            <h3>✨ 欢度春节传统习俗 ✨</h3>
+            <ul>
+                <li>**守岁与团圆饭：** 除夕之夜，全家老少团聚一堂，共进丰盛的年夜饭，彻夜不眠迎接新年。</li>
+                <li>**贴春联与福字：** 红色对联寄托美好祝愿，“福”字倒贴象征着“福到”家中。</li>
+                <li>**拜年与压岁钱：** 大年初一互相登门拜访，晚辈向长辈拜年，长辈派发红包（压岁钱）。</li>
+                <li>**舞龙舞狮：** 锣鼓喧天，醒目的舞龙舞狮表演，寓意驱邪纳福，吉祥如意。</li>
+                <li>**庙会与花灯：** 元宵节期间，逛庙会、赏花灯、猜灯谜，将春节的喜庆推向高潮。</li>
+            </ul>
+        </div>
+        <h>
+            <h1>    最后，祝大家<b>春节快乐！</b></h1>
+        </h>
+    </div>
+
+    <footer>
+        <p>© 2025 CBZ Studio | 马年特别献礼</p>
+    </footer>
+
+</body>
+</html>
