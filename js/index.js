@@ -254,6 +254,11 @@ navigateBasedOnTitle(title) {
         case 'S-Chat':
             this.navigateToSChat();
             break;
+        case '2026，你好':
+        case '2026,你好':
+        case '2026':
+            this.navigateTo2026();
+            break;
         default:
             console.log('未知标题:', title);
             if (typeof Utils !== 'undefined' && Utils.showToast) {
@@ -315,7 +320,10 @@ performSearch(query) {
         'mail': 'mail',
         'schat': 'schat',
         's chat': 'schat',
-        's-chat': 'schat'
+            's-chat': 'schat',
+            '2026，你好': '2026',
+            '2026,你好': '2026',
+            '2026': '2026'
     };
 
     const target = searchMap[query.toLowerCase()];
@@ -348,6 +356,9 @@ performSearch(query) {
                     break;
                 case 'schat':
                     this.navigateToSChat();
+                    break;
+                case '2026':
+                    this.navigateTo2026();
                     break;
             }
         }, 1000);
@@ -424,6 +435,30 @@ performSearch(query) {
             }
 
             setTimeout(() => transition.remove(), 500);
+        }, 200);
+    }
+
+    // 新增：导航到 2026 欢迎页
+    navigateTo2026() {
+        if (typeof Utils !== 'undefined' && Utils.showToast) {
+            Utils.showToast('正在打开 2026 欢迎页...', 'info');
+        }
+
+        const transition = document.createElement('div');
+        transition.className = 'page-transition active';
+        document.body.appendChild(transition);
+
+        setTimeout(() => {
+            try {
+                // 使用相对路径 /2026,welcome 按用户要求
+                window.location.href = '/2026,welcome';
+            } catch (error) {
+                console.error('跳转到 2026 欢迎页失败:', error);
+                if (typeof Utils !== 'undefined' && Utils.showToast) {
+                    Utils.showToast('跳转失败，请访问 /2026,welcome', 'error');
+                }
+                transition.remove();
+            }
         }, 200);
     }
 
@@ -581,7 +616,10 @@ performSearch(query) {
             'mail': 'mail',
             'schat': 'schat',
             's chat': 'schat',
-            's-chat': 'schat'
+            's-chat': 'schat',
+            '2026，你好': '2026',
+            '2026,你好': '2026',
+            '2026': '2026'
         };
 
         const target = searchMap[query.toLowerCase()];
@@ -611,6 +649,9 @@ performSearch(query) {
                         break;
                     case 'schat':
                         this.navigateToSChat();
+                        break;
+                    case '2026':
+                        this.navigateTo2026();
                         break;
                 }
             }, 200);
